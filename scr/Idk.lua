@@ -251,6 +251,7 @@ local Window = WindUI:CreateWindow({
     },
 		Topbar = {
 			Height = 46,
+			Type = "Default", -- "Default" or "Mac"
 		},
 		
 })
