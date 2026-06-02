@@ -139,6 +139,8 @@ elseif game.PlaceId == 116495829188952 then
 	DRL = true
 elseif game.PlaceId == 70876832253163 then
 	DRG = true
+elseif game.PlaceId == 13772394625 then
+	BD = true
 end
 
 --[[ 
@@ -166,6 +168,7 @@ MS. = Meme Sea
 MM2 = Murder Mystery 2
 DRL.= Dead Rails (Lobby)
 DRG = Dead Rails (game)
+BD. = Blade Ball
 
 Tab: Script Tab
 
