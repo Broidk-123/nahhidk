@@ -3,6 +3,8 @@ LIQUID HUB TEMP FILE
 ]]
 --local WindUI = _G.WindUI
 local scriptVersion = "v1.667.67"
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
 
 ---- services
 local Players = game:GetService("Players")
@@ -175,12 +177,11 @@ Tab: Script Tab
 ]]
 
 
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
 WindUI:Popup({
-    Title = "Liquid Hub | Universal",
+    Title = "Welcome, "..player.Name.."!",
     Icon = "info",
-    Content = "Hello! Click the Get Started button to access the script completely.",
+    Content = "Hello! Thanks for using our script! Join to our discord server!",
     Buttons = {
         {
             Title = "Get Started",
@@ -203,7 +204,20 @@ WindUI:Notify({
 					
 				end,
             Variant = "Primary",
-        }
+        },
+			{
+				Title = "Discord",
+				Icon = "Copy",
+				Callback = function()
+					setclipboard("https://discord.gg/jYkbeWtYsf")
+					WindUI:Notify({
+							Title = "Liquid Hub",
+							Content = "Discord Server copied to clipboard!",
+							Icon = "check-circle",
+							Duration = 3,
+						})
+						end
+					},
     }
 })
 
@@ -220,7 +234,7 @@ local Window = WindUI:CreateWindow({
 	Acrylic = true,
 	ScrollBarEnabled = true,
 	SideBarWidth = 180,
-	Size = UDim2.fromOffset(640, 500),
+	Size = UDim2.fromOffset(720, 500),
 	MinSize = Vector2.new(580, 400),
 	MaxSize = Vector2.new(1050, 725),
 		
@@ -233,6 +247,9 @@ local Window = WindUI:CreateWindow({
             print("clicked")
         end,
     },
+		TopBar = {
+			Height = 46,
+		},
 		
 })
 
