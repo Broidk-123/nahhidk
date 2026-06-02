@@ -249,10 +249,10 @@ local Window = WindUI:CreateWindow({
             print("clicked")
         end,
     },
-		Topbar = {
+		--[[Topbar = {
 			Height = 46,
 			Type = "Default", -- "Default" or "Mac"
-		},
+		},]]
 		
 })
 
