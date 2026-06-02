@@ -208,6 +208,7 @@ WindUI:Notify({
 			{
 				Title = "Discord",
 				Icon = "Copy",
+				Variant = "Secondary",
 				Callback = function()
 					setclipboard("https://discord.gg/jYkbeWtYsf")
 					WindUI:Notify({
@@ -247,7 +248,7 @@ local Window = WindUI:CreateWindow({
             print("clicked")
         end,
     },
-		TopBar = {
+		Topbar = {
 			Height = 46,
 		},
 		
