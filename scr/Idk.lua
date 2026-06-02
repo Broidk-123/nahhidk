@@ -179,13 +179,14 @@ Tab: Script Tab
 
 
 WindUI:Popup({
-    Title = "Welcome, "..player.Name.."!",
+    Title = "Welcome, ".. player.Name.. "!",
     Icon = "info",
     Content = "Hello! Thanks for using our script! Join to our discord server!",
     Buttons = {
         {
             Title = "Get Started",
             Icon = "arrow-right",
+			Variant = "Primary",
             Callback = function() 
 	
 WindUI:Notify({
@@ -203,9 +204,9 @@ WindUI:Notify({
 })
 					
 				end,
-            Variant = "Primary",
+            
         },
-			{
+			--[[{
 				Title = "Discord",
 				Icon = "Copy",
 				Variant = "Secondary",
@@ -218,7 +219,7 @@ WindUI:Notify({
 							Duration = 3,
 						})
 						end
-					},
+					},]]
     }
 })
 
