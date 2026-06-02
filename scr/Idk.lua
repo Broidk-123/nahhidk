@@ -1047,9 +1047,9 @@ local messageValue = ""
 
 discordstack1:Input({
     Title = "Message",
-    Desc = "Enter message to send to Discord",
+    Desc = "Enter message",
     Icon = "message-circle",
-    Placeholder = "Type your message here...",
+    Placeholder = "Type here...",
     Callback = function(value)
         messageValue = value
     end,
@@ -1060,7 +1060,7 @@ discordstack1:Button({
     Desc = "Send message to Discord",
     Icon = "send",
     Callback = function()
-        local WEBHOOK_URL = "https://discord.com/api/webhooks/1501437446997544991/ILcP2V6xlzickGGZ2UU2Hi9MGmW19DQ5FvOIeXS5Lc8-TroL6xUu8dE5IUjKNm-f0LPB"
+        local WEBHOOK_URL = ""
 
         if cooldown then
             WindUI:Notify({ Title = "Cooldown!", Content = "Please wait before sending.", Icon = "clock", Duration = 3 })
@@ -1155,7 +1155,7 @@ discordstack2:Button({
     Desc = "Submit your rating",
     Icon = "send",
     Callback = function()
-        local WEBHOOK_URL = "https://discord.com/api/webhooks/1501437446997544991/ILcP2V6xlzickGGZ2UU2Hi9MGmW19DQ5FvOIeXS5Lc8-TroL6xUu8dE5IUjKNm-f0LPB"
+        local WEBHOOK_URL = ""
 
         if ratingCooldown then
             WindUI:Notify({ Title = "Cooldown!", Content = "Please wait before sending another feedback.", Icon = "clock", Duration = 3 })
