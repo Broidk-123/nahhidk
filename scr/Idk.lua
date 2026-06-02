@@ -24,24 +24,22 @@ local SoundService = game:GetService("SoundService")
 
 local Roles = {
     Owner = {
-        "eddiejr031"
+		"eddiejr031"
     },
 
     Admin = {
         "JumpyFrog80",
-        "alvicc12"
+		"alvicc12"
     },
 
-    Beta = {
-        ""
-    },
-
-    Premium = {
-        ""
-    },
+	Beta = {
+		""
+	},
 
     Free = {}
 }
+
+
 
 local function hasRole(roleName)
     local roleList = Roles[roleName]
@@ -58,51 +56,28 @@ end
 
 -- idk what i should call these, but yea
 local canUse = hasRole("Admin") or hasRole("Owner")
-
 local isOwner = hasRole("Owner")
 local isAdmin = hasRole("Admin")
 local isBeta = hasRole("Beta")
-local isPremium = hasRole("Premium")
 local isFree = hasRole("Free")
 
--- Colors (WindUI Gradient)
+--  Colors
 local RoleColors = {
-    Owner = ColorSequence.new(
-        Color3.fromHex("#00C6FF"),
-        Color3.fromHex("#0072FF")
-    ),
-
-    Admin = ColorSequence.new(
-  ),
-        Color3.fromHex("#FF6A00")
-    ),
-
-    Beta = ColorSequence.new(
-        Color3.fromHex("#C471F5"),
-        Color3.fromHex("#7F00FF")
-    ),
-
-    Premium = ColorSequence.new(
-        Color3.fromHex("#00F5FF"),
-        Color3.fromHex("#00A3FF")
-    ),
-
-    Free = ColorSequence.new(
-        Color3.fromHex("#30FF6A"),
-        Color3.fromHex("#e7ff2f")
-    )
+    Owner = Color3.fromHex("#ff2d2d"),
+    Admin = Color3.fromHex("#ffae00"),
+    Beta  = Color3.fromHex("#a855f7"),
+    Free  = Color3.fromHex("#30ff6a")
 }
 
--- Icons
+--  Icons
 local RoleIcons = {
     Owner = "crown",
     Admin = "shield",
-    Beta = "flask",
-    Premium = "gem",
-    Free = "user"
+    Beta  = "flask",
+    Free  = "user"
 }
 
--- Detect Role
+--  Detect Role
 local function getRole()
     if isOwner then
         return "Owner"
@@ -110,14 +85,13 @@ local function getRole()
         return "Admin"
     elseif isBeta then
         return "Beta"
-    elseif isPremium then
-        return "Premium"
     else
         return "Free"
     end
 end
 
 local roleName = getRole()
+
 
 
 -------- TAG CALLLBACK
