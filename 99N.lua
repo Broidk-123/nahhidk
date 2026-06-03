@@ -1,11 +1,11 @@
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
 local Window = WindUI:CreateWindow({
-    Title = "Aura Hub",
-    Icon = "palette",
-    Author = "Thanawat_9999",
+    Title = "Liquid Hub | 99 Nights",
+    Icon = "droplet",
+    Author = "by Takgoo",
     Folder = "Premium",
     Size = UDim2.fromOffset(550, 320),
-    Theme = "Light",
+    Theme = "Sky",
     User = {
         Enabled = true,
         Anonymous = true,
@@ -80,7 +80,8 @@ local InfJumpToggle = TabHandles.Player:Toggle({
     end
 })
 local CustomSpeedSlider = TabHandles.Player:Slider({
-    Title = "Custom Speed Value",
+    Title = "Custom Walkspeed",
+    Desc = "Set walkspeed value",
     Locked = false,
     Value = { Min = 1, Max = 300, Default = 16 },
     Callback = function(value)
@@ -97,7 +98,7 @@ local CustomSpeedSlider = TabHandles.Player:Slider({
 })
 
 local CustomSpeedToggle = TabHandles.Player:Toggle({
-    Title = "Custom Speed",
+    Title = "Enable Custom Speed",
     Locked = false,
     Value = false,
     Callback = function(state)
@@ -481,7 +482,7 @@ local ChestRangeSlider = TabHandles.Chest:Slider({
 })
 
 local AutoChestNearToggle = TabHandles.Chest:Toggle({
-    Title = "Auto Open Chest (Near)",
+    Title = "Auto Open Nearest Chest",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -725,7 +726,7 @@ local TeleportToCamp = TabHandles.Camp:Button({
     end
 })
 local Toggle_LogBring = TabHandles.Create:Toggle({
-    Title = "Auto Log (Bring)",
+    Title = "Auto Bring Log",
     Locked = false,
     Value = false,
     Callback = function(state)
@@ -750,7 +751,7 @@ local Toggle_LogBring = TabHandles.Create:Toggle({
 })
 
 local Toggle_BoltBring = TabHandles.Create:Toggle({
-    Title = "Auto Bolt (Bring)",
+    Title = "Auto Bring Bolt",
     Locked = false,
     Value = false,
     Callback = function(state)
@@ -775,7 +776,7 @@ local Toggle_BoltBring = TabHandles.Create:Toggle({
 })
 
 local Toggle_LogTeleport = TabHandles.Create:Toggle({
-    Title = "Auto Log (Teleport)",
+    Title = "Auto Teleport Log",
     Locked = false,
     Value = false,
     Callback = function(state)
@@ -809,7 +810,7 @@ local Toggle_LogTeleport = TabHandles.Create:Toggle({
 })
 
 local Toggle_BoltTeleport = TabHandles.Create:Toggle({
-    Title = "Auto Bolt (Teleport)",
+    Title = "Auto Teleport Bolt",
     Locked = false,
     Value = false,
     Callback = function(state)
@@ -918,7 +919,7 @@ local ChopTPToggle = TabHandles.Tree:Toggle({
 })
 
 local ChopFakeToggle = TabHandles.Tree:Toggle({
-    Title = "Auto Chop Tree (Testing)",
+    Title = "Auto Chop Tree",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -947,7 +948,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 
 local Noclip1 = TabHandles.Noclip:Toggle({
-    Title = "Basic Noclip",
+    Title = "Regular No Clip",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -964,7 +965,7 @@ local Noclip1 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip2 = TabHandles.Noclip:Toggle({
-    Title = "Smooth Noclip",
+    Title = "Optimized No Clip",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -982,7 +983,7 @@ local Noclip2 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip3 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Jump",
+    Title = "No Clip (Jump)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -995,7 +996,7 @@ local Noclip3 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip4 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Slide",
+    Title = "No Clip (Slide)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1008,7 +1009,7 @@ local Noclip4 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip5 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Fly",
+    Title = "No Clip (Fly)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1021,7 +1022,7 @@ local Noclip5 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip6 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Down",
+    Title = "No Clip (Down)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1034,7 +1035,7 @@ local Noclip6 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip7 = TabHandles.Noclip:Toggle({
-    Title = "Wall Phase",
+    Title = "No Clip (Wall Phase)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1047,7 +1048,7 @@ local Noclip7 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip8 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Dash",
+    Title = "No Clip (Dash)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1060,7 +1061,7 @@ local Noclip8 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip9 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Drift",
+    Title = "No Clip (Drift)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1073,7 +1074,7 @@ local Noclip9 = TabHandles.Noclip:Toggle({
 })
 
 local Noclip10 = TabHandles.Noclip:Toggle({
-    Title = "Noclip Spin",
+    Title = "No Clip (Spin)",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1094,6 +1095,7 @@ _G.FlyUpNightOnly = false
 
 local ToggleAllTime = TabHandles.FlyUp:Toggle({
     Title = "Fly Up (All Time)",
+    Desc = "Fly up all time",
     Locked = false,
     Value = false,
     Callback = function(v)
@@ -1124,6 +1126,7 @@ local ToggleAllTime = TabHandles.FlyUp:Toggle({
 
 local ToggleNightOnly = TabHandles.FlyUp:Toggle({
     Title = "Fly Up (Night Only)",
+    Desc = "Fly up in night time only",
     Locked = false,
     Value = false,
     Callback = function(v)
