@@ -1,4 +1,52 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
+WindUI:Popup({
+    Title = "Welcome, ".. player.Name.. "!",
+    Icon = "info",
+    Content = "Hello! Thanks for using our script! Join to our discord server!",
+    Buttons = {
+        {
+            Title = "Get Started",
+            Icon = "arrow-right",
+			Variant = "Primary",
+            Callback = function() 
+	
+WindUI:Notify({
+                Title = "Liquid Hub • Loaded!",
+                Content = "99 Nights in the Forest script loaded..",
+                Duration = 12, -- 3 seconds
+                Icon = "bell",
+})
+
+WindUI:Notify({
+                Title = "Liquid Hub",
+                Content = "Explore the features of the script, enjoy!",
+                Duration = 10, -- 3 seconds
+                Icon = "bell",
+})
+					
+				end,
+            
+        },
+			--[[{
+				Title = "Discord",
+				Icon = "Copy",
+				Variant = "Secondary",
+				Callback = function()
+					setclipboard("https://discord.gg/jYkbeWtYsf")
+					WindUI:Notify({
+							Title = "Liquid Hub",
+							Content = "Discord Server copied to clipboard!",
+							Icon = "check-circle",
+							Duration = 3,
+						})
+						end
+					},]]
+    }
+})
+
 local Window = WindUI:CreateWindow({
     Title = "Liquid Hub | 99 Nights",
     Icon = "droplet",
