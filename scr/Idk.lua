@@ -1920,7 +1920,7 @@ task.spawn(function()
         Title = "Animation Pack",
         Desc = "Equip all animations at once",
         Icon = "package",
-        Values = {"Default", "Zombie", "Ninja", "Robot", "Vampire", "Werewolf", "Cartoony", "Toy"},
+        Values = {"Default", "Zombie", "Ninja", "Robot", "Vampire", "Werewolf", "Cartoony", "Toy", "Stylish"},
         Value = "Default",
         Multi = false,
         SearchBarEnabled = true,
@@ -1984,6 +1984,13 @@ task.spawn(function()
                     climb = "rbxassetid://782843869", swim = "rbxassetid://782844582",
                     swimidle = "rbxassetid://782845186",
                },
+				Stylish = {
+					idle1 = "rbxassetid://616136790", idle2 = "rbxassetid://616138447",
+                    walk = "rbxassetid://616146177", run = "rbxassetid://616140816",
+                    jump = "rbxassetid://616139451", fall = "rbxassetid://616134815",
+                    climb = "rbxassetid://616133594", swim = "rbxassetid://616143378",
+                    swimidle = "rbxassetid://616144772",
+				}
             }
             local pack = packs[Value]
             if not pack then return end
@@ -2329,7 +2336,7 @@ local animPacks = {
         swimidle = "2510201162",
     },
     ["Stylish"] = {
-        idle = {a1 = "616136790", a2 = "616138447"},
+        idle1 = "616136790", idle2 = "616138447",
         walk = "616146177", run = "616140816",
         jump = "616139451", fall = "616134815",
         climb = "616133594", swim = "616143378",
