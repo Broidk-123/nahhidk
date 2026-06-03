@@ -273,6 +273,7 @@ Window:Tag({
     Title = roleName,
     Icon = RoleIcons[roleName],
     Color = RoleColors[roleName],
+	Border = true,
     Radius = 6
 })
 
@@ -321,6 +322,7 @@ local Tag1 = Window:Tag({
     Title = "Loading...",
     Icon = "wifi",
     Color = Color3.fromHex("#30ff6a"),
+	Border = true,
     Radius = 10,
 })
 
@@ -369,6 +371,7 @@ local VersionTag = Window:Tag({
     Title = scriptVersion,
     Icon = "github",
     Color = Color3.fromHex("#1c1c1c"),
+	Border = true,
     Radius = 12,
 })
 
