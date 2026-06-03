@@ -3848,6 +3848,18 @@ if los then
     ]]
 })
 
+LOSpeed:Button({
+			Title = "❓ SLH Hub",
+			Callback = function()
+                 loadstring(game:HttpGet("https://raw.githubusercontent.com/KyleXAkimbo/SLH-Hub/refs/heads/main/Loader.Lua"))()
+				WindUI:Notify({
+						Title = "Liquid Hub",
+						Content = "Script executed successfully!",
+						Icon = "check",
+						Duration = 3,
+					})
+			end
+		})
 else
 	local Legends = Script:Section({
 			Title = "[🏃‍♂️] Legend of Speed",
@@ -3959,6 +3971,7 @@ if Rvs then
                 Icon = "bell",
 })
 			end})
+	
 else
 	local rivalph = Script:Section({
 			Title = "[🔫] Rivals",
