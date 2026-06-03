@@ -22,13 +22,13 @@ local Tabs = {
 
 }
 local TabHandles = {
-    Player = Tabs.Main:Tab({ Title = "Speed & Jump", Icon = "layout-grid", Desc = "" }),
+    Player = Tabs.Main:Tab({ Title = "Movement", Icon = "layout-grid", Desc = "" }),
     Esp = Tabs.Main:Tab({ Title = "Esp & Item", Icon = "layout-grid", Desc = "" }),
     Chest = Tabs.Main:Tab({ Title = "Auto Chest", Icon = "layout-grid", Desc = "" }),
     Camp = Tabs.Play:Tab({ Title = "Camp Fire", Icon = "layout-grid", Desc = "" }),
     Create = Tabs.Play:Tab({ Title = "Create", Icon = "layout-grid", Desc = "" }),
     Tree = Tabs.Play:Tab({ Title = "Tree Farm", Icon = "layout-grid", Desc = "" }),
-    Noclip = Tabs.Misc:Tab({ Title = "Noclip", Icon = "layout-grid", Desc = "" }),
+    Noclip = Tabs.Misc:Tab({ Title = "No Clip", Icon = "layout-grid", Desc = "" }),
     FlyUp = Tabs.Misc:Tab({ Title = "Fly Up", Icon = "layout-grid", Desc = "" }),
 
 }
