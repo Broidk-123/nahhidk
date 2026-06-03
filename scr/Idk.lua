@@ -4259,6 +4259,18 @@ if MM2 then
 	BoxBorder = true,
 		})
 
+MyM2:Button({
+			Title = "🔓 Vex Hub",
+			Callback = function()
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/INCAVO/Vex-Hub-Mm2/refs/heads/main/Vex%20Hub%20MM2"))()
+				WindUI:Notify({
+						Title = "Liquid Hub",
+						Content = "Script executed successfully!",
+						Icon = "check",
+						Duration = 3,
+					})
+			end
+		})
 else
 	local Mur2 = Script:Section({
 			Title = "[🗡️] Murder Mystery 2",
