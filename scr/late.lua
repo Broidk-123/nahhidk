@@ -693,6 +693,97 @@ inno:Toggle({
 })
 ]]
 
+
+local tpstack = Tabs.Main:HStack()
+local tpstack1 = tpstack:VStack()
+local tpstack2 = tpstack:VStack()
+
+local matchs = tpstack1:Section({
+    ["Title"] = "In-game Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+    
+    
+matchs:Button({
+    ["Title"] = "Teleport To Sheriff",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/62Z9VRVr/raw"))("ture")
+    end
+})
+
+matchs:Button({
+    ["Title"] = "Teleport To Murderer",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/IrRhoidd/raw"))("true")
+    end
+})
+
+local PlayersPlace = game:GetService("Players")
+local LocalPlayerPlace = PlayersPlace.LocalPlayer
+local LoopTeleportAllEnabled = false
+originalPosition = nil
+
+matchs:Toggle({
+    ["Title"] = "Loop Teleport Everyone",
+    ["Value"] = false,
+    ["Callback"] = function(State)
+        LoopTeleportAllEnabled = State
+        if State then
+            if LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
+                originalPosition = LocalPlayerPlace.Character.HumanoidRootPart.CFrame
+            end
+            startTeleporting()
+        elseif originalPosition and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayerPlace.Character.HumanoidRootPart.CFrame = originalPosition
+        end
+    end
+})
+
+function startTeleporting()
+    task.spawn(function()
+        while LoopTeleportAllEnabled do
+            for _, Player in ipairs(PlayersPlace:GetPlayers()) do
+                if Player ~= LocalPlayerPlace and Player.Character and (Player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart")) then
+                    LocalPlayerPlace.Character.HumanoidRootPart.CFrame = Player.Character.HumanoidRootPart.CFrame
+                    task.wait(0.1)
+                end
+            end
+            task.wait(0.1)
+        end
+    end)
+end
+
+LocalPlayerPlace.CharacterAdded:Connect(function()
+    if LoopTeleportAllEnabled then
+        startTeleporting()
+    end
+end)
+
+local maintp = tpstack2:Section({
+    ["Title"] = "Map Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+
+maintp:Button({
+    ["Title"] = "Teleport To Lobby",
+    ["Callback"] = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-108.5, 142, 0.6)
+    end
+})
+
+maintp:Button({
+    ["Title"] = "Teleport To Map",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/lvZs7ugv/raw"))("true")
+    end
+})
+
 local spect = Tabs.Main:Section({
     ["Title"] = "Spectate",
     ["Desc"] = "Spectate and focus camera to selected.",
@@ -836,97 +927,6 @@ spect:Toggle({
         end
     end
 })
-
-local tpstack = Tabs.Main:HStack()
-local tpstack1 = tpstack:VStack()
-local tpstaxk2 = tpstack:VStack()
-
-local matchs = tpstack1:Section({
-    ["Title"] = "In-game Teleport",
-    ["Icon"] = "",
-    ["Opened"] = true,
-    ["Box"] = true,
-    ["BoxBorder"] = true,
-  })
-    
-    
-matchs:Button({
-    ["Title"] = "Teleport To Sheriff",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/62Z9VRVr/raw"))("ture")
-    end
-})
-
-matchs:Button({
-    ["Title"] = "Teleport To Murderer",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/IrRhoidd/raw"))("true")
-    end
-})
-
-local PlayersPlace = game:GetService("Players")
-local LocalPlayerPlace = PlayersPlace.LocalPlayer
-local LoopTeleportAllEnabled = false
-originalPosition = nil
-
-matchs:Toggle({
-    ["Title"] = "Loop Teleport Everyone",
-    ["Value"] = false,
-    ["Callback"] = function(State)
-        LoopTeleportAllEnabled = State
-        if State then
-            if LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
-                originalPosition = LocalPlayerPlace.Character.HumanoidRootPart.CFrame
-            end
-            startTeleporting()
-        elseif originalPosition and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayerPlace.Character.HumanoidRootPart.CFrame = originalPosition
-        end
-    end
-})
-
-function startTeleporting()
-    task.spawn(function()
-        while LoopTeleportAllEnabled do
-            for _, Player in ipairs(PlayersPlace:GetPlayers()) do
-                if Player ~= LocalPlayerPlace and Player.Character and (Player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart")) then
-                    LocalPlayerPlace.Character.HumanoidRootPart.CFrame = Player.Character.HumanoidRootPart.CFrame
-                    task.wait(0.1)
-                end
-            end
-            task.wait(0.1)
-        end
-    end)
-end
-
-LocalPlayerPlace.CharacterAdded:Connect(function()
-    if LoopTeleportAllEnabled then
-        startTeleporting()
-    end
-end)
-
-local maintp = tpstack2:Section({
-    ["Title"] = "Map Teleport",
-    ["Icon"] = "",
-    ["Opened"] = true,
-    ["Box"] = true,
-    ["BoxBorder"] = true,
-  })
-
-maintp:Button({
-    ["Title"] = "Teleport To Lobby",
-    ["Callback"] = function()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-108.5, 142, 0.6)
-    end
-})
-
-maintp:Button({
-    ["Title"] = "Teleport To Map",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/lvZs7ugv/raw"))("true")
-    end
-})
-
 
 Tabs.Misc:Section({
     ["Title"] = "Universal Scripts",
