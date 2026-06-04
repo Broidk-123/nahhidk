@@ -5578,6 +5578,7 @@ local themeDropdown = UI2:Dropdown({
     end
 })
 
+--[[
 local DarkModeToggle = UI2:Toggle({
     Title = "Dark Mode",
     Icon = "moon",
@@ -5603,7 +5604,7 @@ local LightModeToggle = UI2:Toggle({
 	end
 end
 })
-
+]]
 local Toggle111 = UI2:Toggle({
 	Title = "Window Transparency",
 	Desc = "Make window transparent.",
