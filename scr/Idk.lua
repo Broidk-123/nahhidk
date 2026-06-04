@@ -181,7 +181,7 @@ Tab: Script Tab
 
 WindUI:Popup({
     Title = "Welcome, ".. player.Name.. "!",
-    Icon = "info",
+    Icon = "rbxassetid://109069296276521",
     Content = "Hello! Thanks for using our script! Join to our discord server!",
     Buttons = {
         {
@@ -194,14 +194,14 @@ WindUI:Notify({
                 Title = "Liquid Hub • Loaded!",
                 Content = "Universal Hub Loaded..",
                 Duration = 12, -- 3 seconds
-                Icon = "bell",
+                Icon = "rbxassetid://109069296276521",
 })
 
 WindUI:Notify({
                 Title = "Liquid Hub",
                 Content = "Explore the features of the script, enjoy!",
                 Duration = 10, -- 3 seconds
-                Icon = "bell",
+                Icon = "rbxassetid://109069296276521",
 })
 					
 				end,
@@ -239,7 +239,9 @@ local Window = WindUI:CreateWindow({
 	Size = UDim2.fromOffset(720, 500),
 	MinSize = Vector2.new(580, 400),
 	MaxSize = Vector2.new(1050, 725),
-		
+
+		BackgroundImageTransparency = 0.42,
+		Background = "rbxassetid://109069296276521",
 
 		User = {
 			Enabled = true,
