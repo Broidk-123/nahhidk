@@ -105,11 +105,6 @@ end
 
 local roleName = getRole()
 
-Window:Tag({
-    Title = roleName,
-    Icon = RoleIcons[roleName],
-    Color = RoleColors[roleName]
-})
 
 
 -------- TAG CALLLBACK
