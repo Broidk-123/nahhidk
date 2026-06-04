@@ -226,8 +226,8 @@ WindUI:Notify({
 
 local Window = WindUI:CreateWindow({
     Title = "Liquid Hub | Universal",
-    Icon = "rbxassetid://85217490213932", -- lucide icon. optional
-	IconSize = "42",
+    Icon = "rbxassetid://109069296276521", -- lucide icon. optional
+	IconSize = "35",
     Author = "by Takgoo", -- optional
 	Theme = "Sky",
     HideSearchBar = false,
