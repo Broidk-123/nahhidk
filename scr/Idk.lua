@@ -229,12 +229,11 @@ local Window = WindUI:CreateWindow({
     Icon = "rbxassetid://85217490213932", -- lucide icon. optional
 	IconSize = "42",
     Author = "by Takgoo", -- optional
-	Theme = "Crimson",
+	Theme = "Sky",
     HideSearchBar = false,
 	Transparent = true,
 	Resizable = true,
 	NewElements = true,
-	Acrylic = true,
 	ScrollBarEnabled = true,
 	SideBarWidth = 180,
 	Size = UDim2.fromOffset(720, 500),
@@ -259,14 +258,6 @@ local Window = WindUI:CreateWindow({
 
 
 
-Window:CreateTopbarButton("theme-switcher", "moon", function()
-    WindUI:SetTheme(WindUI:GetCurrentTheme() == "Dark" and "Light" or "Dark")
-    WindUI:Notify({
-        Title = "Theme Changed",
-        Content = "Current theme: "..WindUI:GetCurrentTheme(),
-        Duration = 2
-    })
-end, 990)
 
 
 Window:Tag({
