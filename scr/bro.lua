@@ -29,6 +29,18 @@ local Window = WindUI:CreateWindow({
     
 })
 
+function getMap()
+    for _, Child in ipairs(workspace:GetChildren()) do
+        if Child:FindFirstChild("CoinContainer") and Child:FindFirstChild("Spawns") then
+            return Child
+        end
+    end
+    return nil
+end
+
+loadstring(game:HttpGet("https://pastefy.app/hcVkWhQF/raw"))()
+
+
 local MM2TAB = {
   
   local Info = Window:Tab({
@@ -69,282 +81,113 @@ local Mrd = MM2TAB.Main:Section({
 
 Mrd:Button({
         Title = "Kill All",
-        Desc = "HOLD KNIFE",
         Callback = function()
-            local Players = game:GetService("Players")
-
-    local LocalPlayer = Players.LocalPlayer
-
-    local function findMurderer()
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and player.Backpack:FindFirstChild("Knife") or (player.Character and player.Character:FindFirstChild("Knife")) then
-
-                return player
-
-            end
-
-        end
-
-        return nil
-
+            loadstring(game:HttpGet("https://pastefy.app/2eOpHYrg/raw"))("true")
     end
-
-    local function killAll()
-
-        if findMurderer() ~= LocalPlayer then 
-
-            return 
-
-        end
-
-        local character = LocalPlayer.Character
-
-        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-        local knife = character:FindFirstChild("Knife") or LocalPlayer.Backpack:FindFirstChild("Knife")
-
-        if not knife then
-
-            return
-
-        end
-
-        --  If a knife is in the bag, it will automatically be put on.
-        if knife.Parent == LocalPlayer.Backpack then
-
-            local humanoid = character:FindFirstChild("Humanoid")
-
-            if humanoid then
-
-                humanoid:EquipTool(knife)
-
-            end
-
-        end
-
-        -- Kill all the players
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-
-                local enemyRoot = player.Character:FindFirstChild("HumanoidRootPart")
-
-                enemyRoot.Anchored = true
-
-                enemyRoot.CFrame = character:FindFirstChild("HumanoidRootPart").CFrame + character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * 1
-
-            end
-
-        end
-
-        local args = { [1] = "Slash" }
-
-        knife.Stab:FireServer(unpack(args))
-
-    end
-
-    killAll()
-        })
+})
 
 Mrd:Button({
-            Title = "Kill Sheriff",
-            Desc = "HOLD KNIFE",
-            Callback = function()
-                local Players = game:GetService("Players")
-
-    local LocalPlayer = Players.LocalPlayer
-
-    local function findMurderer()
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and player.Backpack:FindFirstChild("Knife") or (player.Character and player.Character:FindFirstChild("Knife")) then
-
-                return player
-
-            end
-
-        end
-
-        return nil
-
+        Title = "Kill Sheriff",
+        Callback = function()
+            loadstring(game:HttpGet("https://pastefy.app/YBXds1as/raw"))("true")
     end
-
-    local function hasGun(player)
-
-        return player.Backpack:FindFirstChild("Gun") or (player.Character and player.Character:FindFirstChild("Gun"))
-
-    end
-
-    local function killAll()
-
-        if findMurderer() ~= LocalPlayer then 
-
-            return 
-
-        end
-
-        local character = LocalPlayer.Character
-
-        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-        local knife = character:FindFirstChild("Knife") or LocalPlayer.Backpack:FindFirstChild("Knife")
-
-        if not knife then
-
-            return
-
-        end
-
-        -- If a knife is in the bag, it will automatically be put on.
-
-        if knife.Parent == LocalPlayer.Backpack then
-
-            local humanoid = character:FindFirstChild("Humanoid")
-
-            if humanoid then
-
-                humanoid:EquipTool(knife)
-
-            end
-
-        end
-
-        -- Only kill players who have "Gun" in their inventory.
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and hasGun(player) and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-
-                local enemyRoot = player.Character:FindFirstChild("HumanoidRootPart")
-
-                enemyRoot.Anchored = true
-
-                enemyRoot.CFrame = character:FindFirstChild("HumanoidRootPart").CFrame + character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * 1
-
-            end
-
-        end
-
-        local args = { [1] = "Slash" }
-
-        knife.Stab:FireServer(unpack(args))
-
-    end
-
-    killAll()
-            })
+})
 
 Mrd:Button({
-            Title = "Kill Innocents",
-            Desc = "HOLD KNIFE",
-            Callback = function()
-                    local Players = game:GetService("Players")
-
-    local LocalPlayer = Players.LocalPlayer
-
-    local anchoredPlayers = {}
-
-    local function findMurderer()
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and player.Backpack:FindFirstChild("Knife") or (player.Character and player.Character:FindFirstChild("Knife")) then
-
-                return player
-
-            end
-
-        end
-
-        return nil
-
+        Title = "Kill Innocents",
+        Callback = function()
+            loadstring(game:HttpGet("https://pastefy.app/vmG5vtCc/raw"))("true")
     end
+})
 
-    local function hasGun(player)
+--service
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-        return player.Backpack:FindFirstChild("Gun") or (player.Character and player.Character:FindFirstChild("Gun"))
+local HitboxSettings = {
+    ["Hitbox"] = {
+        ["Enabled"] = false,
+        ["Size"] = 5,
+        ["Color"] = Color3.new(1, 0, 0),
+        ["Adornments"] = {},
+        ["Connection"] = nil
+    }
+}
 
-    end
-
-    local function killAll()
-
-        if findMurderer() ~= LocalPlayer then 
-
-            return 
-
-        end
-
-        local character = LocalPlayer.Character
-
-        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-        local knife = character:FindFirstChild("Knife") or LocalPlayer.Backpack:FindFirstChild("Knife")
-
-        if not knife then
-
-            return
-
-        end
-
-        -- EÃ„Å¸er bÃ„Â±ÃƒÂ§ak ÃƒÂ§antadaysa, otomatik olarak kuÃ…Å¸an
-
-        if knife.Parent == LocalPlayer.Backpack then
-
-            local humanoid = character:FindFirstChild("Humanoid")
-
-            if humanoid then
-
-                humanoid:EquipTool(knife)
-
-            end
-
-        end
-
-        -- Sadece envanterinde "Gun" OLMAYAN oyuncularÃ„Â± ÃƒÂ¶ldÃƒÂ¼r ve geÃƒÂ§ici olarak dondur
-
-        for _, player in ipairs(Players:GetPlayers()) do
-
-            if player ~= LocalPlayer and not hasGun(player) and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-
-                local enemyRoot = player.Character:FindFirstChild("HumanoidRootPart")
-
-                anchoredPlayers[player] = enemyRoot -- Sonradan serbest bÃ„Â±rakmak iÃƒÂ§in kaydet
-
-                enemyRoot.Anchored = true
-
-                enemyRoot.CFrame = character:FindFirstChild("HumanoidRootPart").CFrame + character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * 1
-
-            end
-
-        end
-
-        local args = { [1] = "Slash" }
-
-        knife.Stab:FireServer(unpack(args))
-
-        -- 2 saniye sonra herkesi serbest bÃ„Â±rak
-
-        task.delay(2, function()
-
-            for player, rootPart in pairs(anchoredPlayers) do
-
-                if rootPart then
-
-                    rootPart.Anchored = false
-
+local function UpdateHitboxes()
+    if HitboxSettings.Hitbox.Enabled then
+        for _, Player in pairs(Players:GetPlayers()) do
+            if Player ~= LocalPlayer then
+                local Character = Player.Character
+                local Adornment = HitboxSettings.Hitbox.Adornments[Player]
+                if Character and HitboxSettings.Hitbox.Enabled then
+                    local RootPart = Character:FindFirstChild("HumanoidRootPart")
+                    if RootPart then
+                        if Adornment then
+                            Adornment.Size = Vector3.new(HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size)
+                            Adornment.Color3 = HitboxSettings.Hitbox.Color
+                        else
+                            local NewAdornment = Instance.new("BoxHandleAdornment")
+                            NewAdornment.Adornee = RootPart
+                            NewAdornment.Size = Vector3.new(HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size)
+                            NewAdornment.Color3 = HitboxSettings.Hitbox.Color
+                            NewAdornment.Transparency = 0.4
+                            NewAdornment.ZIndex = 10
+                            NewAdornment.Parent = RootPart
+                            HitboxSettings.Hitbox.Adornments[Player] = NewAdornment
+                        end
+                    end
+                elseif Adornment then
+                    Adornment:Destroy()
+                    HitboxSettings.Hitbox.Adornments[Player] = nil
                 end
-
             end
-
-            anchoredPlayers = {} -- Listeyi temizle
-
-        end)
-
+        end
     end
+end
 
-    killAll()
-  })
+Mrd:Toggle({
+        Title = "Hitbox",
+        Desc = "Toggle Hitbox on/off",
+        Default = false,
+        Callback = function(v)
+            HitboxSettings.Hitbox.Enabled = v
+        if v then
+            if not HitboxSettings.Hitbox.Connection then
+                HitboxSettings.Hitbox.Connection = RunService.Heartbeat:Connect(UpdateHitboxes)
+            end
+        else
+            if HitboxSettings.Hitbox.Connection then
+                HitboxSettings.Hitbox.Connection:Disconnect()
+                HitboxSettings.Hitbox.Connection = nil
+            end
+            for _, Adornment in pairs(HitboxSettings.Hitbox.Adornments) do
+                if Adornment then
+                    Adornment:Destroy()
+                end
+            end
+            HitboxSettings.Hitbox.Adornments = {}
+        end
+    end
+})
+
+Mrd:Slider({
+        Title = "Hitbox Size",
+        Desc = "Set hitbox size (1-20)",
+        Value = {
+            Min = 1,
+            Max = 20,
+            Default = 10,
+        },
+        Callback = function(v)
+            HitboxSettings.Hitbox.Size = v
+})
+
+Mrd:Colorpicker({
+            Title = "Hitbox Color",
+            Desc = "Set Hitbox Color",
+            Default = Color3.fromRGB(0, 0, 255),
+            Callback = function(color)
+                HitboxSettings.Hitbox.Color = color
+})
