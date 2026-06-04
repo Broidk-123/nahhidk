@@ -382,6 +382,7 @@ local Section1 = Window:Section({
 
 local Main = Section1:Tab({
     Title = "Info",
+	Desc = "Info Tab",
     Icon = "info", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -393,6 +394,7 @@ local Main = Section1:Tab({
 
 local Upd = Section1:Tab({
     Title = "Updates",
+	Desc = "Updates Tab",
     Icon = "message-square", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -404,6 +406,7 @@ local Upd = Section1:Tab({
 
 local lp = Section1:Tab({
 	Title = "Player",
+	Desc = "Player Tab",
 	Icon = "user", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -415,6 +418,7 @@ local lp = Section1:Tab({
 
 local Server = Section1:Tab({
 	Title = "Server",
+	Desc = "Server Tab",
 	Icon = "globe",
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -432,6 +436,7 @@ local Section2 = Window:Section({
 
 local Script = Section2:Tab({
     Title = "Scripts",
+	Desc = "Scripts Tab",
     Icon = "bird", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -443,6 +448,7 @@ local Script = Section2:Tab({
 
 local More = Section2:Tab({
     Title = "More Scripts",
+	Desc = "Additional Scripts Tab",
     Icon = "bird", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -472,6 +478,7 @@ local Section3 = Window:Section({
 
 local Teleport = Section3:Tab({
 	Title = "Teleport",
+	Desc = "Teleport Tab",
 	Icon = "locate",
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -482,6 +489,7 @@ local Teleport = Section3:Tab({
 })
 local Settings = Section3:Tab({
     Title = "Settings",
+	Desc = "Settings Tab",
     Icon = "settings", -- optional
 	IconColor = Color3.fromRGB(5, 5, 5), -- custom icon color. optional
     IconShape = "Square", -- "Square" or "Circle". optional
@@ -5568,6 +5576,32 @@ local themeDropdown = UI2:Dropdown({
         })
         canchangedropdown = true
     end
+})
+
+local DarkModeToggle = UI2:Toggle({
+    Title = "Dark Mode",
+    Icon = "moon",
+    Value = false,
+    Callback = function(v)
+	    if v then
+		WindUI:SetTheme("Dark")
+	else
+		WindUI:SetTheme("Sky")
+	end
+end
+})
+
+local LightModeToggle = UI2:Toggle({
+    Title = "Light Mode",
+    Icon = "sun",
+    Value = false,
+    Callback = function(v)
+	   if v then
+		WindUI:SetTheme("Light")
+	else
+		WindUI:SetTheme("Sky")
+	end
+end
 })
 
 local Toggle111 = UI2:Toggle({
