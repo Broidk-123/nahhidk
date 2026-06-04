@@ -1,41 +1,5 @@
 --[[
-                 . .  .     .          .  .             .
-          .       .  .  .     ..   .    .      .        .
-                   .   .     .             ...  .        
-.                  .       .    ..  .    .=*+-.         .
-       . .             .               .-*:..+:  .      .
-..      .               .+=:..        :*-.. .-+          
-.           ..        . :#-..-#=.   .#-      .*.         
-  .          .........:-=#=.  ..=*-==.       .*..   .    
-        . .:+#%%%%*#%%#%%=..      -+:.       .*.         
-         .-%#%*%%#****%%#=:.       ..     .. .*.      .  
-        ..=%%*@*******%%##+.           .    .==        . 
-       .  -%%%**********+--.   .  ..:*%=-. .:+:  .. . .  
-          .=#****#%@%**++**:.    .+#-.#..  .=-. .   .    
-      ..   :****#@@@@%*****-.=..-%@%-.--  :*=:..     .   
-     .     :*****#%@%******=-:+#@@@#:..=..:::+=          
-. .       .:##************=:. ..*@%=..... .:*-..         
-           :##**********+=++::..  ..:==-:.=*.      .     
-          .=##********##===+*+++:  ...-... :+:..  .    . 
- ..  .    :+##********##===*-....  ...:++===*=.      .   
-    .     .-#%#%*****##@=-*= ....:=#%+.                  
-        .     :%%%%#%*%%#*..      .:+.                .  
-        . .   -@%#%#******+..   .  .-+.                  
-    .        :%%#******+-... .  .  ..+=.   .         .   
-            :%*%********+...  .    . .%.            .  . 
-       .   .*##%*********....        .:+.  .   .         
-          .-#*##*********+:..        ..*.    .           
-  .    .  .=#*%#********+::...     .  .=:  . .           
-    .     .+#*%#*******=.... ..       .--        .  ..   
-          .*#*%%********=.. .     . . .-=.    .    .     
-   .   .  .+#*#%*******-:..           .-=.         .   . 
-       .  .:--+*********+-...   .  .  ... .  .     .     
-        .     .........::::..            .  ..           
-                        .. .                     ..      
-             .            .           .               .  
-This file was generated on https://dsc.gg/decompiler | Pulsar v1.4.3
-Resolved: 312 identifiers | 89 functions | 0 Strings | Renamed: 78 functions | Connected: 45 callbacks | Dead Code Removed: 8 blocks | Inlined: 5 wrappers | Detected loop: 4 blocks
-[Renamer: ON] [Decompiler: ON]
+                LET'S GO LIQUID!
 ]]
 
 repeat
@@ -68,17 +32,7 @@ WindUI:AddTheme({
     ["Icon"] = "#52525b"
 })
 
-WindUI:AddTheme({
-    ["Name"] = "Gray",
-    ["Accent"] = "#374151",
-    ["Dialog"] = "#374151",
-    ["Outline"] = "#d1d5db",
-    ["Text"] = "#f9fafb",
-    ["Placeholder"] = "#9ca3af",
-    ["Background"] = "#1f2937",
-    ["Button"] = "#4b5563",
-    ["Icon"] = "#d1d5db"
-})
+
 
 WindUI:AddTheme({
     ["Name"] = "Blue",
@@ -90,18 +44,6 @@ WindUI:AddTheme({
     ["Background"] = "#1e293b",
     ["Button"] = "#3b82f6",
     ["Icon"] = "#93c5fd"
-})
-
-WindUI:AddTheme({
-    ["Name"] = "Green",
-    ["Accent"] = "#059669",
-    ["Dialog"] = "#047857",
-    ["Outline"] = "#6ee7b7",
-    ["Text"] = "#ecfdf5",
-    ["Placeholder"] = "#34d399",
-    ["Background"] = "#064e3b",
-    ["Button"] = "#10b981",
-    ["Icon"] = "#6ee7b7"
 })
 
 WindUI:AddTheme({
@@ -121,9 +63,7 @@ WindUI:SetNotificationLower(true)
 local ThemesList = {
     "Dark",
     "Light",
-    "Gray",
     "Blue",
-    "Green",
     "Purple"
 }
 
@@ -141,11 +81,11 @@ game.StarterGui:SetCore("SendNotification", {
 })
 
 local MainWindow = WindUI:CreateWindow({
-    ["Title"] = "VexonHub",
-    ["Icon"] = "zap",
-    ["Author"] = "Murder Mystery 2",
+    ["Title"] = "Liquid Hub | MM2",
+    ["Icon"] = "droplet",
+    ["Author"] = "by Takgoo",
     ["Folder"] = "vexonhub",
-    ["Size"] = UDim2.fromOffset(500, 350),
+    ["Size"] = UDim2.fromOffset(620, 420),
     ["Transparent"] = getgenv().TransparencyEnabled,
     ["Theme"] = "Dark",
     ["Resizable"] = true,
@@ -164,8 +104,8 @@ local MainWindow = WindUI:CreateWindow({
             local NewTheme = ThemesList[CurrentThemeIndex]
             WindUI:SetTheme(NewTheme)
             WindUI:Notify({
-                ["Title"] = "Theme Changed",
-                ["Content"] = "Switched to " .. NewTheme .. " theme!",
+                ["Title"] = "Theme Applied",
+                ["Content"] = "Changed to " .. NewTheme .. " theme!",
                 ["Duration"] = 2,
                 ["Icon"] = "palette"
             })
@@ -214,7 +154,7 @@ end
 loadstring(game:HttpGet("https://pastefy.app/hcVkWhQF/raw"))()
 
 MainWindow:EditOpenButton({
-    ["Title"] = "VexonHub",
+    ["Title"] = "Open Liquid",
     ["CornerRadius"] = UDim.new(0, 6),
     ["StrokeThickness"] = 2,
     ["Color"] = ColorSequence.new(Color3.fromRGB(30, 30, 30), Color3.fromRGB(255, 255, 255)),
@@ -225,79 +165,87 @@ MainWindow.ToggleKey = Enum.KeyCode.R
 
 local Tabs = {}
 
-Tabs.Main = MainWindow:Tab({
-    ["Title"] = "Main",
-    ["Icon"] = "eye",
-    ["Desc"] = "VexonHub"
+Tabs.Info = MainWindow:Tab({
+    ["Title"] = "Information",
+    ["Icon"] = "badge-info",
+    ["Desc"] = "Information"
 })
 
-Tabs.Misc = MainWindow:Tab({
-    ["Title"] = "Misc",
-    ["Icon"] = "sparkles",
-    ["Desc"] = "VexonHub"
+Tabs.Fling = MainWindow:Tab({
+    ["Title"] = "Player",
+    ["Icon"] = "user",
+    ["Desc"] = "Fling"
 })
+
+Tabs.Main = MainWindow:Tab({
+    ["Title"] = "Main",
+    ["Icon"] = "house",
+    ["Desc"] = "Main"
+})
+
 
 Tabs.ESP = MainWindow:Tab({
     ["Title"] = "ESP",
     ["Icon"] = "eye",
-    ["Desc"] = "VexonHub"
+    ["Desc"] = "ESP"
 })
 
 Tabs.Farm = MainWindow:Tab({
     ["Title"] = "Farm",
     ["Icon"] = "wrench",
-    ["Desc"] = "VexonHub"
+    ["Desc"] = "Farm"
 })
 
 Tabs.Anim = MainWindow:Tab({
     ["Title"] = "Animations",
     ["Icon"] = "package",
-    ["Desc"] = "VexonHub"
+    ["Desc"] = "Animations"
 })
 
 Tabs.Place = MainWindow:Tab({
     ["Title"] = "Teleport",
     ["Icon"] = "map",
-    ["Desc"] = "VexonHub"
+    ["Desc"] = "Teleport"
 })
 
-Tabs.Fling = MainWindow:Tab({
-    ["Title"] = "Fling",
-    ["Icon"] = "user",
-    ["Desc"] = "VexonHub"
+Tabs.Misc = MainWindow:Tab({
+    ["Title"] = "Misc",
+    ["Icon"] = "settings",
+    ["Desc"] = "Misc"
 })
 
-Tabs.Info = MainWindow:Tab({
-    ["Title"] = "Information",
-    ["Icon"] = "badge-info",
-    ["Desc"] = "VexonHub"
-})
 
-MainWindow:SelectTab(8)
+local mm2stack = Tabs.Main:HStack()
+local murd = mm2stack:VStack()
+local sher = mm2stack:VStack()
 
-Tabs.Main:Section({
+local mrd = murd:Section({
     ["Title"] = "Murder",
-    ["Icon"] = "sword"
+    ["Icon"] = "sword",
+    ["TextXAlignment"] = "Center",
 })
 
-Tabs.Main:Button({
-    ["Title"] = "Kill All (hold knife)",
+murd:Button({
+    ["Title"] = "Kill All",
+    ["Desc"] = "Hold Knife",
     ["Locked"] = false,
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/2eOpHYrg/raw"))("true")
     end
 })
 
-Tabs.Main:Button({
-    ["Title"] = "Kill Sheriff (hold knife)",
+murd:Button({
+    ["Title"] = "Kill Sheriff",
+    ["Desc"] = "Hold Knife",
     ["Locked"] = false,
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/YBXds1as/raw"))("true")
     end
 })
 
-Tabs.Main:Button({
-    ["Title"] = "Kill Innocents (hold knife)",
+murd:Button({
+    ["Title"] = "Kill Innocents",
+    ["Desc"] = "Hold Knife",
     ["Locked"] = false,
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/vmG5vtCc/raw"))("true")
@@ -350,8 +298,9 @@ local function UpdateHitboxes()
     end
 end
 
-Tabs.Main:Toggle({
-    ["Title"] = "Hitboxes",
+murd:Toggle({
+    ["Title"] = "Hitbox",
+    ["Desc"] = "Toggle hitbox on/off",
     ["Callback"] = function(State)
         HitboxSettings.Hitbox.Enabled = State
         if State then
@@ -373,11 +322,12 @@ Tabs.Main:Toggle({
     end
 })
 
-Tabs.Main:Slider({
-    ["Title"] = "Hitbox size",
+murd:Slider({
+    ["Title"] = "Hitbox Size",
+    ["Desc"] = "Set Hitbox Size",
     ["Value"] = {
         ["Min"] = 1,
-        ["Max"] = 20,
+        ["Max"] = 15,
         ["Default"] = 5
     },
     ["Callback"] = function(Value)
@@ -385,20 +335,22 @@ Tabs.Main:Slider({
     end
 })
 
-Tabs.Main:Colorpicker({
+murd:Colorpicker({
     ["Title"] = "Hitbox color",
-    ["Default"] = Color3.new(1, 0, 0),
+    ["Desc"] = "Set Hitbox Color"
+    ["Default"] = Color3.new(0, 0, 1),
     ["Callback"] = function(Color)
         HitboxSettings.Hitbox.Color = Color
     end
 })
 
-Tabs.Main:Section({
+local shf = sher:Section({
     ["Title"] = "Sheriff",
-    ["Icon"] = "heart"
+    ["Icon"] = "crosshair",
+    ["TextXAlignment"] = "Center",
 })
 
-Tabs.Main:Button({
+sher:Button({
     ["Title"] = "Shoot Murderer",
     ["Locked"] = false,
     ["Callback"] = function()
@@ -437,8 +389,9 @@ local function PredictPosition(Player, Offset)
     end
 end
 
-Tabs.Main:Toggle({
-    ["Title"] = "AimBot Cam To Murder",
+sher:Toggle({
+    ["Title"] = "Camera Aimbot",
+    ["Desc"] = "Camera focuses to the Murderer",
     ["Value"] = false,
     ["Callback"] = function(State)
         AimbotEnabled = State
@@ -467,8 +420,9 @@ local GunAimbotEnabled = false
 local GunAimbotConnection = nil
 local TouchConnection = nil
 
-Tabs.Main:Toggle({
-    ["Title"] = "Gun Aimbot (to murder)",
+sher:Toggle({
+    ["Title"] = "Gun Aimbot",
+    ["Desc"] = "Aims to the Murderer",
     ["Value"] = false,
     ["Callback"] = function(State)
         GunAimbotEnabled = State
@@ -702,7 +656,7 @@ local function OnCharacterAddedInvis(NewCharacter)
 end
 
 Tabs.Main:Toggle({
-    ["Title"] = "invisibility",
+    ["Title"] = "Invisibility",
     ["Value"] = false,
     ["Callback"] = function(State)
         InvisibilityEnabled = State
@@ -758,430 +712,16 @@ Tabs.Main:Toggle({
     end
 })
 
-Tabs.Main:Button({
-    ["Title"] = "Get Second Life (unstable)",
+--[[Tabs.Main:Button({
+    ["Title"] = "Respawn",
     ["Locked"] = false,
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/FHl36Zg1/raw"))("true")
     end
 })
+]]
 
-Tabs.Main:Section({
-    ["Title"] = "Fly",
-    ["Icon"] = "utensils"
-})
 
-local PlayersFly = game:GetService("Players")
-local UserInputServiceFly = game:GetService("UserInputService")
-local StarterGuiFly = game:GetService("StarterGui")
-local LocalPlayerFly = PlayersFly.LocalPlayer
-local FlySpeed = 50
-local FlyEnabled = false
-local MobilePadEnabled = false
-local InputBeganConnection = nil
-local InputEndedConnection = nil
-local CharacterAddedConnection = nil
-
-local FlyDirection = {
-    ["f"] = 0,
-    ["b"] = 0,
-    ["l"] = 0,
-    ["r"] = 0
-}
-
-local function PlayFlyAnimation(AnimationId, TimePosition, Speed)
-    pcall(function()
-        if LocalPlayerFly.Character then
-            LocalPlayerFly.Character.Animate.Disabled = true
-            local Humanoid = LocalPlayerFly.Character:FindFirstChildOfClass("Humanoid")
-            if Humanoid then
-                for _, Track in ipairs(Humanoid:GetPlayingAnimationTracks()) do
-                    Track:Stop(0)
-                end
-                local Animation = Instance.new("Animation")
-                Animation.AnimationId = "rbxassetid://" .. AnimationId
-                local AnimTrack = Humanoid:LoadAnimation(Animation)
-                AnimTrack:Play(0.1)
-                AnimTrack.TimePosition = TimePosition
-                AnimTrack:AdjustSpeed(Speed)
-            end
-        else
-            return
-        end
-    end)
-end
-
-local function StopAllAnimations()
-    pcall(function()
-        if LocalPlayerFly.Character then
-            local Humanoid = LocalPlayerFly.Character:FindFirstChildOfClass("Humanoid")
-            if Humanoid then
-                for _, Track in ipairs(Humanoid:GetPlayingAnimationTracks()) do
-                    Track:Stop(0.1)
-                end
-                LocalPlayerFly.Character.Animate.Disabled = false
-            end
-        else
-            return
-        end
-    end)
-end
-
-local FlyPadGui = Instance.new("ScreenGui")
-FlyPadGui.Name = "FlyPadGui_Gemini"
-FlyPadGui.Parent = game.CoreGui
-FlyPadGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-FlyPadGui.Enabled = false
-
-local FlyPad = Instance.new("ImageButton")
-FlyPad.Name = "Fly_Pad"
-FlyPad.Parent = FlyPadGui
-FlyPad.BackgroundTransparency = 1
-FlyPad.Position = UDim2.new(0.1, 0, 0.6, 0)
-FlyPad.Size = UDim2.new(0, 100, 0, 100)
-FlyPad.ZIndex = 2
-FlyPad.Image = "rbxassetid://6764432293"
-FlyPad.ImageRectOffset = Vector2.new(713, 315)
-FlyPad.ImageRectSize = Vector2.new(75, 75)
-
-local LeftButton = Instance.new("TextButton")
-LeftButton.Parent = FlyPad
-LeftButton.BackgroundTransparency = 1
-LeftButton.Size = UDim2.new(0, 30, 0, 40)
-LeftButton.Position = UDim2.new(0, 0, 0, 30)
-LeftButton.Text = ""
-
-local RightButton = Instance.new("TextButton")
-RightButton.Parent = FlyPad
-RightButton.BackgroundTransparency = 1
-RightButton.Size = UDim2.new(0, 30, 0, 40)
-RightButton.Position = UDim2.new(0, 70, 0, 30)
-RightButton.Text = ""
-
-local ForwardButton = Instance.new("TextButton")
-ForwardButton.Parent = FlyPad
-ForwardButton.BackgroundTransparency = 1
-ForwardButton.Size = UDim2.new(0, 40, 0, 30)
-ForwardButton.Position = UDim2.new(0, 30, 0, 0)
-ForwardButton.Text = ""
-
-local BackwardButton = Instance.new("TextButton")
-BackwardButton.Parent = FlyPad
-BackwardButton.BackgroundTransparency = 1
-BackwardButton.Size = UDim2.new(0, 40, 0, 30)
-BackwardButton.Position = UDim2.new(0, 30, 0, 70)
-BackwardButton.Text = ""
-
-ForwardButton.MouseButton1Down:Connect(function()
-    if typeof(keypress) == "function" then
-        keypress("0x57")
-    end
-end)
-
-ForwardButton.MouseButton1Up:Connect(function()
-    if typeof(keyrelease) == "function" then
-        keyrelease("0x57")
-    end
-end)
-
-BackwardButton.MouseButton1Down:Connect(function()
-    if typeof(keypress) == "function" then
-        keypress("0x53")
-    end
-end)
-
-BackwardButton.MouseButton1Up:Connect(function()
-    if typeof(keyrelease) == "function" then
-        keyrelease("0x53")
-    end
-end)
-
-LeftButton.MouseButton1Down:Connect(function()
-    if typeof(keypress) == "function" then
-        keypress("0x41")
-    end
-end)
-
-LeftButton.MouseButton1Up:Connect(function()
-    if typeof(keyrelease) == "function" then
-        keyrelease("0x41")
-    end
-end)
-
-RightButton.MouseButton1Down:Connect(function()
-    if typeof(keypress) == "function" then
-        keypress("0x44")
-    end
-end)
-
-RightButton.MouseButton1Up:Connect(function()
-    if typeof(keyrelease) == "function" then
-        keyrelease("0x44")
-    end
-end)
-
-local function StartFlying(Character)
-    if Character and Character:FindFirstChild("UpperTorso") then
-        local Torso = Character.UpperTorso
-        local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-        if Humanoid then
-            for _, Child in pairs(Torso:GetChildren()) do
-                if Child.Name == "GeminiFlyMover" then
-                    Child:Destroy()
-                end
-            end
-            local BodyGyro = Instance.new("BodyGyro", Torso)
-            BodyGyro.Name = "GeminiFlyMover"
-            BodyGyro.P = 20000
-            BodyGyro.maxTorque = Vector3.new(math.huge, math.huge, math.huge)
-            BodyGyro.cframe = Torso.CFrame
-            local BodyVelocity = Instance.new("BodyVelocity", Torso)
-            BodyVelocity.Name = "GeminiFlyMover"
-            BodyVelocity.velocity = Vector3.new(0, 0.1, 0)
-            BodyVelocity.maxForce = Vector3.new(math.huge, math.huge, math.huge)
-            PlayFlyAnimation(10714347256, 4, 0)
-            while true do
-                task.wait()
-                pcall(function()
-                    if Character.Parent and Humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
-                        Humanoid.PlatformStand = true
-                        local Camera = workspace.CurrentCamera
-                        local Direction = Vector3.new(FlyDirection.l + FlyDirection.r, 0, FlyDirection.f + FlyDirection.b)
-                        local WorldDirection = Camera.CFrame:VectorToWorldSpace(Direction).Unit
-                        if Direction.Magnitude <= 0 then
-                            BodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-                        else
-                            BodyVelocity.Velocity = WorldDirection * FlySpeed
-                        end
-                        local TiltX = math.rad(-75) * -(FlyDirection.f + FlyDirection.b)
-                        local TiltZ = math.rad(30) * -(FlyDirection.l + FlyDirection.r)
-                        BodyGyro.CFrame = Camera.CFrame * CFrame.Angles(TiltX, 0, TiltZ)
-                    else
-                        FlyEnabled = false
-                    end
-                end)
-                if not (FlyEnabled and Humanoid) then
-                    break
-                end
-                if Humanoid:GetState() == Enum.HumanoidStateType.Dead then
-                    break
-                end
-            end
-            pcall(function()
-                BodyGyro:Destroy()
-                BodyVelocity:Destroy()
-                Humanoid.PlatformStand = false
-                StopAllAnimations()
-            end)
-        end
-    else
-        return
-    end
-end
-
-function updateMobilePadVisibility()
-    local ShouldShow = FlyEnabled and MobilePadEnabled
-    if ShouldShow then
-        ShouldShow = UserInputServiceFly.TouchEnabled
-    end
-    FlyPadGui.Enabled = ShouldShow
-end
-
-Tabs.Main:Input({
-    ["Title"] = "Fly Speed",
-    ["Placeholder"] = tostring(FlySpeed),
-    ["Callback"] = function(Text)
-        local NewSpeed = tonumber(Text)
-        if NewSpeed and 0 < NewSpeed then
-            FlySpeed = NewSpeed
-            StarterGuiFly:SetCore("SendNotification", {
-                ["Title"] = "VexonFly",
-                ["Text"] = "Speed set to: " .. FlySpeed,
-                ["Icon"] = "rbxassetid://84519376661277",
-                ["Duration"] = 2
-            })
-        else
-            StarterGuiFly:SetCore("SendNotification", {
-                ["Title"] = "VexonFly",
-                ["Text"] = "Invalid speed. Please enter a number greater than 0.",
-                ["Icon"] = "rbxassetid://84519376661277",
-                ["Duration"] = 3
-            })
-        end
-    end
-})
-
-Tabs.Main:Toggle({
-    ["Title"] = "Mobile Fly Panel",
-    ["Value"] = MobilePadEnabled,
-    ["Callback"] = function(State)
-        MobilePadEnabled = State
-        updateMobilePadVisibility()
-    end
-})
-
-Tabs.Main:Toggle({
-    ["Title"] = "Fly",
-    ["Value"] = FlyEnabled,
-    ["Callback"] = function(State)
-        FlyEnabled = State
-        if FlyEnabled then
-            InputBeganConnection = UserInputServiceFly.InputBegan:Connect(function(Input, GameProcessed)
-                if not GameProcessed then
-                    if Input.UserInputType == Enum.UserInputType.Keyboard then
-                        local Key = Input.KeyCode.Name:lower()
-                        if Key == "w" then
-                            FlyDirection.f = -1
-                            PlayFlyAnimation(10714177846, 4.65, 0)
-                        elseif Key == "s" then
-                            FlyDirection.b = 1
-                            PlayFlyAnimation(10147823318, 4.11, 0)
-                        elseif Key == "a" then
-                            FlyDirection.l = -1
-                            PlayFlyAnimation(10147823318, 3.55, 0)
-                        elseif Key == "d" then
-                            FlyDirection.r = 1
-                            PlayFlyAnimation(10147823318, 4.81, 0)
-                        end
-                    end
-                end
-            end)
-            InputEndedConnection = UserInputServiceFly.InputEnded:Connect(function(Input)
-                if Input.UserInputType == Enum.UserInputType.Keyboard then
-                    local Key = Input.KeyCode.Name:lower()
-                    if Key == "w" then
-                        FlyDirection.f = 0
-                        PlayFlyAnimation(10714347256, 4, 0)
-                    elseif Key == "s" then
-                        FlyDirection.b = 0
-                        PlayFlyAnimation(10714347256, 4, 0)
-                    elseif Key == "a" then
-                        FlyDirection.l = 0
-                        PlayFlyAnimation(10714347256, 4, 0)
-                    elseif Key == "d" then
-                        FlyDirection.r = 0
-                        PlayFlyAnimation(10714347256, 4, 0)
-                    end
-                end
-            end)
-            CharacterAddedConnection = LocalPlayerFly.CharacterAdded:Connect(function(NewCharacter)
-                task.wait(0.5)
-                if FlyEnabled then
-                    task.spawn(StartFlying, NewCharacter)
-                end
-            end)
-            if LocalPlayerFly.Character then
-                task.spawn(StartFlying, LocalPlayerFly.Character)
-            end
-        else
-            if InputBeganConnection then
-                InputBeganConnection:Disconnect()
-                InputBeganConnection = nil
-            end
-            if InputEndedConnection then
-                InputEndedConnection:Disconnect()
-                InputEndedConnection = nil
-            end
-            if CharacterAddedConnection then
-                CharacterAddedConnection:Disconnect()
-                CharacterAddedConnection = nil
-            end
-            FlyDirection = {
-                ["f"] = 0,
-                ["b"] = 0,
-                ["l"] = 0,
-                ["r"] = 0
-            }
-            if LocalPlayerFly.Character then
-                for _, Child in pairs(LocalPlayerFly.Character.UpperTorso:GetChildren()) do
-                    if Child.Name == "GeminiFlyMover" then
-                        Child:Destroy()
-                    end
-                end
-                StopAllAnimations()
-            end
-        end
-        updateMobilePadVisibility()
-    end
-})
-
-Tabs.Main:Section({
-    ["Title"] = "Movement",
-    ["Icon"] = "settings"
-})
-
-local function ToggleSpeedBypass(State)
-    speedToggle = State
-    getgenv().WalkspeedBypass = speedToggle
-    if State then
-        task.spawn(function()
-            while getgenv().WalkspeedBypass and (character and character.Parent) do
-                local Humanoid = character:FindFirstChildOfClass("Humanoid")
-                if Humanoid and Humanoid.MoveDirection.Magnitude > 0 then
-                    character:TranslateBy(Humanoid.MoveDirection * speedValue * RunService.Heartbeat:Wait() * 7)
-                else
-                    task.wait()
-                end
-            end
-        end)
-    end
-end
-
-Tabs.Main:Toggle({
-    ["Title"] = "Speed (V Key On/Off)",
-    ["Value"] = false,
-    ["Callback"] = ToggleSpeedBypass
-})
-
-Tabs.Main:Slider({
-    ["Title"] = "Speed Boost Value",
-    ["step"] = 1,
-    ["Value"] = {
-        ["Min"] = 1,
-        ["Max"] = 100,
-        ["Default"] = 9
-    },
-    ["Callback"] = function(Value)
-        speedValue = Value
-    end
-})
-
-UserInputServiceFly.InputBegan:Connect(function(Input, GameProcessed)
-    if Input.KeyCode == Enum.KeyCode.V and not GameProcessed then
-        ToggleSpeedBypass(not speedToggle)
-    end
-end)
-
-Tabs.Main:Toggle({
-    ["Title"] = "Jump",
-    ["Value"] = false,
-    ["Callback"] = function(State)
-        getgenv().JumpPowerBypass = State
-        if State then
-            task.spawn(function()
-                while getgenv().JumpPowerBypass do
-                    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
-                        character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, jumpValue, 0)
-                    end
-                    task.wait()
-                end
-            end)
-        end
-    end
-})
-
-Tabs.Main:Slider({
-    ["Title"] = "Jump Boost Value",
-    ["step"] = 1,
-    ["Value"] = {
-        ["Min"] = 1,
-        ["Max"] = 1000,
-        ["Default"] = 200
-    },
-    ["Callback"] = function(Value)
-        jumpValue = Value
-    end
-})
 
 Tabs.Misc:Section({
     ["Title"] = "Universal Scripts",
@@ -1189,52 +729,16 @@ Tabs.Misc:Section({
 })
 
 Tabs.Misc:Button({
-    ["Title"] = "Inf Yield",
+    ["Title"] = "Infinite Yield",
+    ["Desc"] = "Loads a universal admin script",
     ["Locked"] = false,
     ["Callback"] = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end
 })
 
-Tabs.Misc:Button({
-    ["Title"] = "Dex Explorer",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Classic-Dex-Explorer-21009"))()
-    end
-})
 
-Tabs.Misc:Button({
-    ["Title"] = "Remote Spy",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua"))()
-    end
-})
 
-Tabs.Misc:Button({
-    ["Title"] = "Keyboard",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/advxzivhsjjdhxhsidifvsh/mobkeyboard/main/main.txt", true))()
-    end
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "Anim Logger",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/juBGMpCZ/raw"))()
-    end
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "f3x",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))()
-    end
-})
 
 Tabs.Misc:Button({
     ["Title"] = "Fly V3",
@@ -1244,54 +748,10 @@ Tabs.Misc:Button({
     end
 })
 
-Tabs.Misc:Button({
-    ["Title"] = "VFX Logger",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/2uXfJqdU"))()
-    end
-})
-
-Tabs.Misc:Section({
-    ["Title"] = "Player",
-    ["Icon"] = "star"
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "ServerHop",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/uTXUoORd/raw"))()
-    end
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "Rejoin",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        game:GetService("TeleportService"):Teleport(game.PlaceId)
-    end
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "Reset",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/YPv8xrYN/raw"))()
-    end
-})
-
-Tabs.Misc:Button({
-    ["Title"] = "Fixcam",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/IrvnCaF2/raw"))()
-    end
-})
 
 Tabs.Misc:Section({
     ["Title"] = "Tools",
-    ["Icon"] = "sword"
+    ["Icon"] = "hammer"
 })
 
 Tabs.Misc:Button({
@@ -1569,11 +1029,17 @@ local PlayersNotify = game:GetService("Players")
 local RunServiceNotify = game:GetService("RunService")
 
 local function SendNotification(Message)
-    game.StarterGui:SetCore("SendNotification", {
+    --[[game.StarterGui:SetCore("SendNotification", {
         ["Title"] = "VexonHub",
         ["Text"] = Message,
         ["Icon"] = "http://www.roblox.com/asset/?id=84519376661277",
         ["Duration"] = 5
+    })]]
+  WindUI:Notify({
+      ["Title"] = "Liquid Hub",
+      ["Content"] = Message,
+      ["Icon"] = "bell",
+      ["Duration"] = 5,
     })
 end
 
@@ -1652,7 +1118,7 @@ Tabs.ESP:Button({
             CameraSpectate.CameraSubject = MurdererCharacter:FindFirstChild("Humanoid")
         else
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "VexonHub",
+                ["Title"] = "HEY!",
                 ["Text"] = "Murder Not Found!",
                 ["Duration"] = 1,
                 ["Callback"] = AllowRunServiceBind
@@ -1684,7 +1150,7 @@ Tabs.ESP:Button({
             CameraSpectate2.CameraSubject = SheriffCharacter:FindFirstChild("Humanoid")
         else
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "VexonHub",
+                ["Title"] = "HEY!",
                 ["Text"] = "Sheriff Not Found",
                 ["Duration"] = 10,
                 ["Callback"] = AllowRunServiceBind
@@ -1702,8 +1168,8 @@ Tabs.ESP:Button({
         local AllPlayers = PlayersRandom:GetPlayers()
         if #AllPlayers <= 1 then
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "VexonHub",
-                ["Text"] = "There must be at least 2 people on the server",
+                ["Title"] = "HEY!",
+                ["Text"] = "No enough player in the server.",
                 ["Duration"] = 1,
                 ["Callback"] = AllowRunServiceBind
             })
