@@ -240,9 +240,6 @@ local Window = WindUI:CreateWindow({
 	MinSize = Vector2.new(580, 400),
 	MaxSize = Vector2.new(1050, 725),
 
-		BackgroundImageTransparency = 0.42,
-		Background = "rbxassetid://109069296276521",
-
 		User = {
 			Enabled = true,
         
