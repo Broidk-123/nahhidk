@@ -180,12 +180,13 @@ Tabs.Misc = MainWindow:Tab({
 
 local mm2stack = Tabs.Main:HStack()
 local murd = mm2stack:VStack()
-local sher = mm2stack:VStack()
+local sherinno = mm2stack:VStack()
 
 local mrd = murd:Section({
     ["Title"] = "Murder",
     ["Icon"] = "sword",
     ["TextXAlignment"] = "Center",
+    ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
 })
@@ -309,10 +310,13 @@ mrd:Colorpicker({
     end
 })
 
-local shf = sher:Section({
+local shf = sherinno:Section({
     ["Title"] = "Sheriff",
     ["Icon"] = "crosshair",
     ["TextXAlignment"] = "Center",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
 shf:Button({
@@ -447,7 +451,7 @@ shf:Toggle({
     end
 })
 
-local inno = Tabs.Main:Section({
+local inno = sherinno:Section({
     ["Title"] = "Innocent",
     ["Icon"] = "eye",
     ["Opened"] = true,
@@ -833,6 +837,96 @@ spect:Toggle({
     end
 })
 
+local tpstack = Tabs.Main:HStack()
+local tpstack1 = tpstack:VStack()
+local tpstaxk2 = tpstack:VStack()
+
+local matchs = tpstack1:Section({
+    ["Title"] = "In-game Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+    
+    
+matchs:Button({
+    ["Title"] = "Teleport To Sheriff",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/62Z9VRVr/raw"))("ture")
+    end
+})
+
+matchs:Button({
+    ["Title"] = "Teleport To Murderer",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/IrRhoidd/raw"))("true")
+    end
+})
+
+local PlayersPlace = game:GetService("Players")
+local LocalPlayerPlace = PlayersPlace.LocalPlayer
+local LoopTeleportAllEnabled = false
+originalPosition = nil
+
+matchs:Toggle({
+    ["Title"] = "Loop Teleport Everyone",
+    ["Value"] = false,
+    ["Callback"] = function(State)
+        LoopTeleportAllEnabled = State
+        if State then
+            if LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
+                originalPosition = LocalPlayerPlace.Character.HumanoidRootPart.CFrame
+            end
+            startTeleporting()
+        elseif originalPosition and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayerPlace.Character.HumanoidRootPart.CFrame = originalPosition
+        end
+    end
+})
+
+function startTeleporting()
+    task.spawn(function()
+        while LoopTeleportAllEnabled do
+            for _, Player in ipairs(PlayersPlace:GetPlayers()) do
+                if Player ~= LocalPlayerPlace and Player.Character and (Player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart")) then
+                    LocalPlayerPlace.Character.HumanoidRootPart.CFrame = Player.Character.HumanoidRootPart.CFrame
+                    task.wait(0.1)
+                end
+            end
+            task.wait(0.1)
+        end
+    end)
+end
+
+LocalPlayerPlace.CharacterAdded:Connect(function()
+    if LoopTeleportAllEnabled then
+        startTeleporting()
+    end
+end)
+
+local maintp = tpstack2:Section({
+    ["Title"] = "Map Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+
+maintp:Button({
+    ["Title"] = "Teleport To Lobby",
+    ["Callback"] = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-108.5, 142, 0.6)
+    end
+})
+
+maintp:Button({
+    ["Title"] = "Teleport To Map",
+    ["Callback"] = function()
+        loadstring(game:HttpGet("https://pastefy.app/lvZs7ugv/raw"))("true")
+    end
+})
+
 
 Tabs.Misc:Section({
     ["Title"] = "Universal Scripts",
@@ -881,9 +975,12 @@ Tabs.Misc:Button({
     end
 })
 
-Tabs.ESP:Section({
+local espg = Tabs.ESP:Section({
     ["Title"] = "ESP",
-    ["Icon"] = "package"
+    ["Icon"] = "brush",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
 local PlayersESP = game:GetService("Players")
@@ -1001,7 +1098,7 @@ for _, Player in pairs(PlayersESP:GetPlayers()) do
     end
 end
 
-Tabs.ESP:Toggle({
+espg:Toggle({
     ["Title"] = "ESP Murderer",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1010,7 +1107,7 @@ Tabs.ESP:Toggle({
     end
 })
 
-Tabs.ESP:Toggle({
+espg:Toggle({
     ["Title"] = "ESP Sheriff",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1019,7 +1116,7 @@ Tabs.ESP:Toggle({
     end
 })
 
-Tabs.ESP:Toggle({
+espg:Toggle({
     ["Title"] = "ESP Innocent",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1028,9 +1125,10 @@ Tabs.ESP:Toggle({
     end
 })
 
+espg:Divider()
 local GunESPHighlight = nil
 
-Tabs.ESP:Toggle({
+espg:Toggle({
     ["Title"] = "Gun ESP",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1057,9 +1155,12 @@ Tabs.ESP:Toggle({
     end
 })
 
-Tabs.ESP:Section({
+local exposerole = Tabs.ESP:Section({
     ["Title"] = "Expose Roles",
-    ["Icon"] = "info"
+    ["Icon"] = "info",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
 local PlayersExpose = game:GetService("Players")
@@ -1113,15 +1214,16 @@ local function CreateAutoExposeToggle(Title, WeaponName, RoleName)
         end
     })
 end
+local exposestack = exposerole:HStack()
 
-Tabs.ESP:Button({
+exposestack:Button({
     ["Title"] = "Expose Murderer",
     ["Callback"] = function()
         ExposeRole("Knife", "Murderer")
     end
 })
 
-Tabs.ESP:Button({
+exposestack:Button({
     ["Title"] = "Expose Sheriff",
     ["Callback"] = function()
         ExposeRole("Gun", "Sheriff")
@@ -1203,9 +1305,12 @@ CreateAutoNotifyToggle("Auto Notify Murderer", "Knife", "Murderer")
 CreateAutoNotifyToggle("Auto Notify Sheriff", "Gun", "Sheriff")
 
 
-Tabs.Farm:Section({
+local farming = Tabs.Farm:Section({
     ["Title"] = "Coins",
-    ["Icon"] = "package"
+    ["Icon"] = "package",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
 local PlayersFarm = game:GetService("Players")
@@ -1322,7 +1427,8 @@ RunServiceFarm.Heartbeat:Connect(function()
     end
 end)
 
-Tabs.Farm:Toggle({
+local farmstack = farming:HStack()
+farmstack:Toggle({
     ["Title"] = "Auto Farm Coin",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1334,7 +1440,7 @@ Tabs.Farm:Toggle({
     end
 })
 
-Tabs.Farm:Toggle({
+farmstack:Toggle({
     ["Title"] = "Teleport + Walk",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1414,92 +1520,7 @@ Tabs.Farm:Toggle({
 })
 
 
-        
-local matchs = Tabs.Place:Section({
-    ["Title"] = "In-game Teleport",
-    ["Icon"] = "",
-    ["Opened"] = true,
-    ["Box"] = true,
-    ["BoxBorder"] = true,
-  })
-    
-    
-matchs:Button({
-    ["Title"] = "Teleport To Sheriff",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/62Z9VRVr/raw"))("ture")
-    end
-})
 
-matchs:Button({
-    ["Title"] = "Teleport To Murderer",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/IrRhoidd/raw"))("true")
-    end
-})
-
-local PlayersPlace = game:GetService("Players")
-local LocalPlayerPlace = PlayersPlace.LocalPlayer
-local LoopTeleportAllEnabled = false
-originalPosition = nil
-
-matchs:Toggle({
-    ["Title"] = "Loop Teleport Everyone",
-    ["Value"] = false,
-    ["Callback"] = function(State)
-        LoopTeleportAllEnabled = State
-        if State then
-            if LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
-                originalPosition = LocalPlayerPlace.Character.HumanoidRootPart.CFrame
-            end
-            startTeleporting()
-        elseif originalPosition and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayerPlace.Character.HumanoidRootPart.CFrame = originalPosition
-        end
-    end
-})
-
-function startTeleporting()
-    task.spawn(function()
-        while LoopTeleportAllEnabled do
-            for _, Player in ipairs(PlayersPlace:GetPlayers()) do
-                if Player ~= LocalPlayerPlace and Player.Character and (Player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayerPlace.Character and LocalPlayerPlace.Character:FindFirstChild("HumanoidRootPart")) then
-                    LocalPlayerPlace.Character.HumanoidRootPart.CFrame = Player.Character.HumanoidRootPart.CFrame
-                    task.wait(0.1)
-                end
-            end
-            task.wait(0.1)
-        end
-    end)
-end
-
-LocalPlayerPlace.CharacterAdded:Connect(function()
-    if LoopTeleportAllEnabled then
-        startTeleporting()
-    end
-end)
-
-local maintp = Tabs.Main:Section({
-    ["Title"] = "Map Teleport",
-    ["Icon"] = "",
-    ["Opened"] = true,
-    ["Box"] = true,
-    ["BoxBorder"] = true,
-  })
-
-maintp:Button({
-    ["Title"] = "Teleport To Lobby",
-    ["Callback"] = function()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-108.5, 142, 0.6)
-    end
-})
-
-maintp:Button({
-    ["Title"] = "Teleport To Map",
-    ["Callback"] = function()
-        loadstring(game:HttpGet("https://pastefy.app/lvZs7ugv/raw"))("true")
-    end
-})
 
 local lpmove = Tabs.Fling:Section({
     ["Title"] = "Player Movement",
