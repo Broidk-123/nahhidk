@@ -58,7 +58,6 @@ WindUI:AddTheme({
     ["Icon"] = "#c4b5fd"
 })
 
-WindUI:SetNotificationLower(true)
 
 local ThemesList = {
     "Dark",
@@ -69,9 +68,6 @@ local ThemesList = {
 
 local CurrentThemeIndex = 1
 
-if not getgenv().TransparencyEnabled then
-    getgenv().TransparencyEnabled = false
-end
 
 game.StarterGui:SetCore("SendNotification", {
     ["Title"] = "VexonHub",
@@ -86,8 +82,8 @@ local MainWindow = WindUI:CreateWindow({
     ["Author"] = "by Takgoo",
     ["Folder"] = "vexonhub",
     ["Size"] = UDim2.fromOffset(620, 420),
-    ["Transparent"] = getgenv().TransparencyEnabled,
-    ["Theme"] = "Dark",
+    ["Transparent"] = true,
+    ["Theme"] = "Sky",
     ["Resizable"] = true,
     ["SideBarWidth"] = 150,
     ["BackgroundImageTransparency"] = 0.8,
