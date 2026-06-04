@@ -68,19 +68,19 @@ local ThemesList = {
 
 local CurrentThemeIndex = 1
 
+WindUI:Notify({
+    ["Title"] = "Liquid Hub",
+    ["Content"] = "Toggle Keybind: R",
+    ["Icon"] = "rbxassetid://109069296276521",
+    ["Duration"] = 12,
+  })
 
-game.StarterGui:SetCore("SendNotification", {
-    ["Title"] = "VexonHub",
-    ["Text"] = "Toggle Keybind: ( R )",
-    ["Duration"] = 30,
-    ["Icon"] = "rbxassetid://84519376661277"
-})
 
 local MainWindow = WindUI:CreateWindow({
     ["Title"] = "Liquid Hub | MM2",
-    ["Icon"] = "droplet",
+    ["Icon"] = "rbxassetid://109069296276521",
     ["Author"] = "by Takgoo",
-    ["Folder"] = "vexonhub",
+    ["Folder"] = "Liquidhub",
     ["Size"] = UDim2.fromOffset(620, 420),
     ["Transparent"] = true,
     ["Theme"] = "Sky",
@@ -164,11 +164,6 @@ Tabs.Farm = MainWindow:Tab({
     ["Desc"] = "Farm"
 })
 
-Tabs.Anim = MainWindow:Tab({
-    ["Title"] = "Animations",
-    ["Icon"] = "package",
-    ["Desc"] = "Animations"
-})
 
 Tabs.Place = MainWindow:Tab({
     ["Title"] = "Teleport",
@@ -191,9 +186,11 @@ local mrd = murd:Section({
     ["Title"] = "Murder",
     ["Icon"] = "sword",
     ["TextXAlignment"] = "Center",
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
-murd:Button({
+mrd:Button({
     ["Title"] = "Kill All",
     ["Desc"] = "Hold Knife",
     ["Locked"] = false,
@@ -202,7 +199,7 @@ murd:Button({
     end
 })
 
-murd:Button({
+mrd:Button({
     ["Title"] = "Kill Sheriff",
     ["Desc"] = "Hold Knife",
     ["Locked"] = false,
@@ -211,7 +208,7 @@ murd:Button({
     end
 })
 
-murd:Button({
+mrd:Button({
     ["Title"] = "Kill Innocents",
     ["Desc"] = "Hold Knife",
     ["Locked"] = false,
@@ -266,7 +263,7 @@ local function UpdateHitboxes()
     end
 end
 
-murd:Toggle({
+mrd:Toggle({
     ["Title"] = "Hitbox",
     ["Desc"] = "Toggle hitbox on/off",
     ["Callback"] = function(State)
@@ -290,7 +287,7 @@ murd:Toggle({
     end
 })
 
-murd:Slider({
+mrd:Slider({
     ["Title"] = "Hitbox Size",
     ["Desc"] = "Set Hitbox Size",
     ["Value"] = {
@@ -303,7 +300,7 @@ murd:Slider({
     end
 })
 
-murd:Colorpicker({
+mrd:Colorpicker({
     ["Title"] = "Hitbox color",
     ["Desc"] = "Set Hitbox Color",
     ["Default"] = Color3.new(0, 0, 1),
@@ -318,7 +315,7 @@ local shf = sher:Section({
     ["TextXAlignment"] = "Center",
 })
 
-sher:Button({
+shf:Button({
     ["Title"] = "Shoot Murderer",
     ["Locked"] = false,
     ["Callback"] = function()
@@ -357,7 +354,7 @@ local function PredictPosition(Player, Offset)
     end
 end
 
-sher:Toggle({
+shf:Toggle({
     ["Title"] = "Camera Aimbot",
     ["Desc"] = "Camera focuses to the Murderer",
     ["Value"] = false,
@@ -388,7 +385,7 @@ local GunAimbotEnabled = false
 local GunAimbotConnection = nil
 local TouchConnection = nil
 
-sher:Toggle({
+shf:Toggle({
     ["Title"] = "Gun Aimbot",
     ["Desc"] = "Aims to the Murderer",
     ["Value"] = false,
@@ -453,6 +450,7 @@ sher:Toggle({
 local inno = Tabs.Main:Section({
     ["Title"] = "Innocent",
     ["Icon"] = "eye",
+    ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
 })
@@ -695,6 +693,7 @@ local spect = Tabs.Main:Section({
     ["Title"] = "Spectate",
     ["Desc"] = "Spectate and focus camera to selected.",
     ["Icon"] = "eye",
+    ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
   })
