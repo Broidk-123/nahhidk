@@ -2,6 +2,7 @@
 LIQUID HUB TEMP FILE 
 ]]
 --local WindUI = _G.WindUI
+print("Premium:", JD_IS_PREMIUM)
 local scriptVersion = "v1.667.67"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
