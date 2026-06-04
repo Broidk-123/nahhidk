@@ -5395,7 +5395,7 @@ light:Toggle({
 local effects = {}
 local vignetteGui = nil
 
-local lightingToggle = light:Toggle({
+light:Toggle({
     Title = "RTX Summer Lighting [BETA]",
     Desc = "Enabling this could cause serious lag on some device.",
 	Icon = "sparkles",
@@ -5561,6 +5561,7 @@ local canchangedropdown = true
 
 local themeDropdown = UI2:Dropdown({
     Title = "Select Theme",
+    Desc = "Select Theme (Wind UI)",
     Values = themes,
     Flag = "themeDropdown",
     SearchBarEnabled = true,
@@ -5584,7 +5585,7 @@ UI2:Toggle({
     Icon = "moon",
     Value = false,
     Callback = function(v)
-	Window:Theme(v)
+	
 	    if v then
 		WindUI:SetTheme("Dark")
 	else
@@ -5598,7 +5599,6 @@ UI2:Toggle({
     Icon = "sun",
     Value = false,
     Callback = function(v)
-	Window:Theme(v)
 	
 	   if v then
 		WindUI:SetTheme("Light")
