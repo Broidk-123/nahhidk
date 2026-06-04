@@ -44,6 +44,12 @@ local MM2TAB = {
       ShowTabTitle = true,
       Border = true,
     })
+    local TP = Window:Tab({
+            Title = "Teleport",
+            Icon = "locate",
+            ShowTabTitle = true,
+            Border = true,
+        })
   local Settings = Window:Tab({
       Title = "Settings",
       Icon = "settings",
