@@ -23,28 +23,29 @@ local StarterGui = game:GetService("StarterGui")
 
 local SoundService = game:GetService("SoundService")
 
+
 local Roles = {
     Owner = {
-		"eddiejr031"
+        "eddiejr031"
     },
 
     Admin = {
         "JumpyFrog80",
-		"alvicc12"
+        "alvicc12"
     },
 
-	Beta = {
-		""
-	},
+    Beta = {
+        ""
+    },
 
-    Free = {}
+    User = {}
 }
-
-
 
 local function hasRole(roleName)
     local roleList = Roles[roleName]
-    if not roleList then return false end
+    if not roleList then
+        return false
+    end
 
     for _, name in ipairs(roleList) do
         if name == player.Name then
@@ -55,30 +56,39 @@ local function hasRole(roleName)
     return false
 end
 
--- idk what i should call these, but yea
+-- Permissions
 local canUse = hasRole("Admin") or hasRole("Owner")
+
 local isOwner = hasRole("Owner")
 local isAdmin = hasRole("Admin")
 local isBeta = hasRole("Beta")
-local isFree = hasRole("Free")
 
---  Colors
+-- Premium from Loader
+
+
+local isPremium = getgenv().Key == "Premium"
+
+
+
+
+-- Colors
 local RoleColors = {
-    Owner = Color3.fromHex("#ff2d2d"),
-    Admin = Color3.fromHex("#ffae00"),
-    Beta  = Color3.fromHex("#a855f7"),
-    Free  = Color3.fromHex("#30ff6a")
+    Owner = Color3.fromHex("#0072FF"),
+    Admin = Color3.fromHex("#FF8C00"),
+    Beta = Color3.fromHex("#A855F7"),
+    Premium = Color3.fromHex("#00D4FF"),
+    User = Color3.fromHex("#30FF6A")
 }
 
---  Icons
+-- Icons
 local RoleIcons = {
     Owner = "crown",
     Admin = "shield",
-    Beta  = "flask",
-    Free  = "user"
+    Beta = "flask",
+    Premium = "gem",
+    User = "user"
 }
 
---  Detect Role
 local function getRole()
     if isOwner then
         return "Owner"
@@ -86,13 +96,20 @@ local function getRole()
         return "Admin"
     elseif isBeta then
         return "Beta"
+    elseif isPremium then
+        return "Premium"
     else
-        return "Free"
+        return "User"
     end
 end
 
 local roleName = getRole()
 
+Window:Tag({
+    Title = roleName,
+    Icon = RoleIcons[roleName],
+    Color = RoleColors[roleName]
+})
 
 
 -------- TAG CALLLBACK
