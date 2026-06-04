@@ -337,7 +337,7 @@ murd:Slider({
 
 murd:Colorpicker({
     ["Title"] = "Hitbox color",
-    ["Desc"] = "Set Hitbox Color"
+    ["Desc"] = "Set Hitbox Color",
     ["Default"] = Color3.new(0, 0, 1),
     ["Callback"] = function(Color)
         HitboxSettings.Hitbox.Color = Color
