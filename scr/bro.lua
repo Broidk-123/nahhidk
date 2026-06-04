@@ -41,8 +41,7 @@ end
 loadstring(game:HttpGet("https://pastefy.app/hcVkWhQF/raw"))()
 
 
-local MM2TAB = {
-  
+
   local Info = Window:Tab({
     Title = "Info",
     Icon = "info", -- optional
@@ -69,9 +68,8 @@ local MM2TAB = {
       Border = true,
     })
 
-}
 
-local Mrd = MM2TAB.Main:Section({
+local Mrd = Main:Section({
         Title = "Murderer",
         Desc = "Murderer actions, this if you're a murderer",
         Icon = "sword",
