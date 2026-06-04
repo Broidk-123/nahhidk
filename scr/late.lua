@@ -109,34 +109,6 @@ local MainWindow = WindUI:CreateWindow({
     }
 })
 
-pcall(function()
-    MainWindow:CreateTopbarButton("TransparencyToggle", "eye", function()
-        if getgenv().TransparencyEnabled then
-            getgenv().TransparencyEnabled = false
-            pcall(function()
-                MainWindow:ToggleTransparency(false)
-            end)
-            WindUI:Notify({
-                ["Title"] = "Transparency",
-                ["Content"] = "Transparency disabled",
-                ["Duration"] = 3,
-                ["Icon"] = "eye"
-            })
-        else
-            getgenv().TransparencyEnabled = true
-            pcall(function()
-                MainWindow:ToggleTransparency(true)
-            end)
-            WindUI:Notify({
-                ["Title"] = "Transparency",
-                ["Content"] = "Transparency enabled",
-                ["Duration"] = 3,
-                ["Icon"] = "eye-off"
-            })
-        end
-        print("Debug - Current Transparency state:", getgenv().TransparencyEnabled)
-    end, 990)
-end)
 
 function getMap()
     for _, Child in ipairs(workspace:GetChildren()) do
@@ -478,9 +450,11 @@ sher:Toggle({
     end
 })
 
-Tabs.Main:Section({
+local inno = Tabs.Main:Section({
     ["Title"] = "Innocent",
-    ["Icon"] = "eye"
+    ["Icon"] = "eye",
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
 
 local PlayersInvis = game:GetService("Players")
@@ -651,7 +625,7 @@ local function OnCharacterAddedInvis(NewCharacter)
     end)
 end
 
-Tabs.Main:Toggle({
+inno:Toggle({
     ["Title"] = "Invisibility",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -673,7 +647,7 @@ end
 
 local AutoGetGunEnabled = false
 
-Tabs.Main:Toggle({
+inno:Toggle({
     ["Title"] = "Auto Get Gun",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -717,6 +691,148 @@ Tabs.Main:Toggle({
 })
 ]]
 
+local spect = Tabs.Main:Section({
+    ["Title"] = "Spectate",
+    ["Desc"] = "Spectate and focus camera to selected.",
+    ["Icon"] = "eye",
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+getgenv().SpectateLoop = nil
+
+local function FindMurdererCharacter()
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer and Player.Character then
+            if Player.Backpack:FindFirstChild("Knife") or Player.Character:FindFirstChild("Knife") then
+                return Player.Character
+            end
+        end
+    end
+    return nil
+end
+
+local function FindSheriffCharacter()
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer and Player.Character then
+            if Player.Backpack:FindFirstChild("Gun") or Player.Character:FindFirstChild("Gun") then
+                return Player.Character
+            end
+        end
+    end
+    return nil
+end
+
+local function StopSpectate()
+    if getgenv().SpectateLoop then
+        task.cancel(getgenv().SpectateLoop)
+        getgenv().SpectateLoop = nil
+    end
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        Camera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
+    end
+end
+
+spect:Toggle({
+    ["Title"] = "Spectate Murderer",
+    ["Default"] = false,
+    ["Callback"] = function(Value)
+        if Value then
+            StopSpectate()
+            getgenv().SpectateLoop = task.spawn(function()
+                while Value do
+                    task.wait(1)
+                    local MurdererCharacter = FindMurdererCharacter()
+                    if MurdererCharacter and MurdererCharacter:FindFirstChild("Humanoid") then
+                        Camera.CameraSubject = MurdererCharacter:FindFirstChild("Humanoid")
+                    else
+                        WindUI:Notify({
+                            ["Title"] = "Liquid Hub",
+                            ["Content"] = "Murderer not found!",
+                            ["Duration"] = 2,
+                            ["Icon"] = "x"
+                        })
+                        task.wait(2)
+                    end
+                end
+            end)
+        else
+            StopSpectate()
+        end
+    end
+})
+
+spect:Toggle({
+    ["Title"] = "Spectate Sheriff",
+    ["Default"] = false,
+    ["Callback"] = function(Value)
+        if Value then
+            StopSpectate()
+            getgenv().SpectateLoop = task.spawn(function()
+                while Value do
+                    task.wait(1)
+                    local SheriffCharacter = FindSheriffCharacter()
+                    if SheriffCharacter and SheriffCharacter:FindFirstChild("Humanoid") then
+                        Camera.CameraSubject = SheriffCharacter:FindFirstChild("Humanoid")
+                    else
+                        WindUI:Notify({
+                            ["Title"] = "Liquid Hub",
+                            ["Content"] = "Sheriff not found!",
+                            ["Duration"] = 2,
+                            ["Icon"] = "x"
+                        })
+                        task.wait(2)
+                    end
+                end
+            end)
+        else
+            StopSpectate()
+        end
+    end
+})
+
+spect:Toggle({
+    ["Title"] = "Spectate Random Player",
+    ["Default"] = false,
+    ["Callback"] = function(Value)
+        if Value then
+            StopSpectate()
+            getgenv().SpectateLoop = task.spawn(function()
+                while Value do
+                    task.wait(3)
+                    local AllPlayers = Players:GetPlayers()
+                    if #AllPlayers <= 1 then
+                        WindUI:Notify({
+                            ["Title"] = "Liquid Hub",
+                            ["Content"] = "No enough player",
+                            ["Duration"] = 2,
+                            ["Icon"] = "users"
+                        })
+                    else
+                        local RandomPlayer
+                        repeat
+                            RandomPlayer = AllPlayers[math.random(1, #AllPlayers)]
+                        until RandomPlayer ~= LocalPlayer and RandomPlayer.Character and RandomPlayer.Character:FindFirstChild("Humanoid")
+                        Camera.CameraSubject = RandomPlayer.Character:FindFirstChild("Humanoid")
+                        WindUI:Notify({
+                            ["Title"] = "Spectating",
+                            ["Content"] = "Now spectating: " .. RandomPlayer.Name,
+                            ["Duration"] = 2,
+                            ["Icon"] = "eye"
+                        })
+                    end
+                end
+            end)
+        else
+            StopSpectate()
+        end
+    end
+})
 
 
 Tabs.Misc:Section({
@@ -1087,112 +1203,9 @@ Tabs.ESP:Button({
 CreateAutoNotifyToggle("Auto Notify Murderer", "Knife", "Murderer")
 CreateAutoNotifyToggle("Auto Notify Sheriff", "Gun", "Sheriff")
 
-Tabs.ESP:Section({
-    ["Title"] = "Spectate",
-    ["Icon"] = "eye"
-})
-
-local PlayersSpectate = game:GetService("Players")
-local LocalPlayerSpectate = PlayersSpectate.LocalPlayer
-local CameraSpectate = game.Workspace.CurrentCamera
-
-local function FindMurdererCharacter()
-    for _, Player in pairs(PlayersSpectate:GetPlayers()) do
-        if Player ~= LocalPlayerSpectate and Player.Character and (Player.Backpack:FindFirstChild("Knife") or Player.Character:FindFirstChild("Knife")) then
-            return Player.Character
-        end
-    end
-    return nil
-end
-
-Tabs.ESP:Button({
-    ["Title"] = "Spectate Murderer",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        local MurdererCharacter = FindMurdererCharacter()
-        if MurdererCharacter and MurdererCharacter:FindFirstChild("HumanoidRootPart") then
-            CameraSpectate.CameraSubject = MurdererCharacter:FindFirstChild("Humanoid")
-        else
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "HEY!",
-                ["Text"] = "Murder Not Found!",
-                ["Duration"] = 1,
-                ["Callback"] = AllowRunServiceBind
-            })
-        end
-    end
-})
-
-local PlayersSpectate2 = game:GetService("Players")
-local LocalPlayerSpectate2 = PlayersSpectate2.LocalPlayer
-local CameraSpectate2 = game.Workspace.CurrentCamera
-game:GetService("StarterGui")
-
-local function FindSheriffCharacter()
-    for _, Player in pairs(PlayersSpectate2:GetPlayers()) do
-        if Player ~= LocalPlayerSpectate2 and Player.Character and (Player.Backpack:FindFirstChild("Gun") or Player.Character:FindFirstChild("Gun")) then
-            return Player.Character
-        end
-    end
-    return nil
-end
-
-Tabs.ESP:Button({
-    ["Title"] = "Spectate Sheriff",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        local SheriffCharacter = FindSheriffCharacter()
-        if SheriffCharacter and SheriffCharacter:FindFirstChild("Humanoid") then
-            CameraSpectate2.CameraSubject = SheriffCharacter:FindFirstChild("Humanoid")
-        else
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "HEY!",
-                ["Text"] = "Sheriff Not Found",
-                ["Duration"] = 10,
-                ["Callback"] = AllowRunServiceBind
-            })
-        end
-    end
-})
-
-Tabs.ESP:Button({
-    ["Title"] = "Spectate Random",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        local PlayersRandom = game:GetService("Players")
-        local LocalPlayerRandom = PlayersRandom.LocalPlayer
-        local AllPlayers = PlayersRandom:GetPlayers()
-        if #AllPlayers <= 1 then
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "HEY!",
-                ["Text"] = "No enough player in the server.",
-                ["Duration"] = 1,
-                ["Callback"] = AllowRunServiceBind
-            })
-        else
-            repeat
-                local RandomPlayer = AllPlayers[math.random(1, #AllPlayers)]
-            until RandomPlayer ~= LocalPlayerRandom and RandomPlayer.Character and RandomPlayer.Character:FindFirstChild("Humanoid")
-            workspace.CurrentCamera.CameraSubject = RandomPlayer.Character:FindFirstChild("Humanoid")
-        end
-    end
-})
-
-local LocalPlayerStopSpectate = game:GetService("Players").LocalPlayer
-local CameraStopSpectate = game.Workspace.CurrentCamera
-
-Tabs.ESP:Button({
-    ["Title"] = "Stop Spectating",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        if LocalPlayerStopSpectate.Character and LocalPlayerStopSpectate.Character:FindFirstChild("Humanoid") then
-            CameraStopSpectate.CameraSubject = LocalPlayerStopSpectate.Character:FindFirstChild("Humanoid")
-        end
-    end
-})
 
 Tabs.Farm:Section({
-    ["Title"] = "Coin Farm",
+    ["Title"] = "Coins",
     ["Icon"] = "package"
 })
 
@@ -1332,7 +1345,7 @@ Tabs.Farm:Toggle({
 
 Tabs.Farm:Dropdown({
     ["Title"] = "Coin Farm Mode",
-    ["Desc"] = "Ana hedef coin'i nasıl seçeceğini belirle",
+    ["Desc"] = "Select which mode you want to.",
     ["Values"] = { "Nearest", "Random" },
     ["Value"] = "Nearest",
     ["Callback"] = function(Value)
@@ -1359,7 +1372,8 @@ local SpinSpeed = 5
 local SpinConnection = nil
 
 Tabs.Farm:Toggle({
-    ["Title"] = "Spin (spin for getting coins easily)",
+    ["Title"] = "Spin Character",
+    ["Desc"] = "Spin for ease",
     ["Value"] = false,
     ["Callback"] = function(State)
         if State then
@@ -1384,6 +1398,7 @@ local AntiAFKConnection = nil
 
 Tabs.Farm:Toggle({
     ["Title"] = "Anti-AFK",
+    ["Desc"] = "Prevents system kick",
     ["Value"] = false,
     ["Callback"] = function(State)
         if State then
@@ -1399,399 +1414,25 @@ Tabs.Farm:Toggle({
     end
 })
 
-Tabs.Anim:Section({
-    ["Title"] = "Animation Packs",
-    ["Icon"] = "package"
-})
 
-local LocalPlayerAnim = LocalPlayerFly
-
-Tabs.Anim:Button({
-    ["Title"] = "Vampire",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1083445855"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1083450166"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1083473930"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1083462077"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1083455352"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1083439238"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1083443587"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Hero",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616111295"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616113536"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616122287"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616117076"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616115533"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616104706"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616108001"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "ZombieClassic",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616158929"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616160636"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616168032"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616163682"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616161997"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616156119"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616157476"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Mage",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=707742142"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=707855907"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=707897309"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=707861613"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=707853694"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=707826056"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=707829716"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Ghost",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616006778"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616008087"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616010382"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616013216"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616008936"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616003713"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616005863"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Elder",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=845397899"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=845400520"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=845403856"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=845386501"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=845398858"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=845392038"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=845396048"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Levitation",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616006778"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616008087"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616013216"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616010382"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616008936"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616003713"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616005863"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Astronaut",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=891621366"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=891633237"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=891667138"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=891636393"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=891627522"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=891609353"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=891617961"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Ninja",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=656117400"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=656118341"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=656121766"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=656118852"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=656117878"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=656114359"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=656115606"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Werewolf",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1083195517"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1083214717"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1083178339"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1083216690"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1083218792"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1083182000"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1083189019"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Cartoon",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=742637544"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=742638445"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=742640026"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=742638842"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=742637942"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=742636889"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=742637151"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Pirate",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=750781874"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=750782770"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=750785693"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=750783738"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=750782230"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=750779899"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=750780242"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Sneaky",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1132473842"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1132477671"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1132510133"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1132494274"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1132489853"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1132461372"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1132469004"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Toy",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=782841498"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=782845736"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=782843345"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=782842708"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=782847020"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=782843869"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=782846423"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Knight",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=657595757"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=657568135"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=657552124"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=657564596"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=658409194"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=658360781"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=657600338"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Confident",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1069977950"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1069987858"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1070017263"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1070001516"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1069984524"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1069946257"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1069973677"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Popstar",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1212900985"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1212900985"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1212980338"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1212980348"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1212954642"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1213044953"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1212900995"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Princess",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=941003647"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=941013098"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=941028902"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=941015281"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=941008832"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=940996062"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=941000007"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Cowboy",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1014390418"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1014398616"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1014421541"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1014401683"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1014394726"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1014380606"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1014384571"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Patrol",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1149612882"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1150842221"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1151231493"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1150967949"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1150944216"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1148811837"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1148863382"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Anim:Button({
-    ["Title"] = "Zombie FE",
-    ["Locked"] = false,
-    ["Callback"] = function()
-        Animate.Disabled = true
-        StopAllAnimations()
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=3489171152"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=3489171152"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=3489174223"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=3489173414"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616161997"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616156119"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616157476"
-        LocalPlayerAnim.Character.Humanoid:ChangeState(3)
-        Animate.Disabled = false
-    end
-})
-
-Tabs.Place:Button({
+        
+local matchs = Tabs.Place:Section({
+    ["Title"] = "In-game Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+    
+    
+matchs:Button({
     ["Title"] = "Teleport To Sheriff",
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/62Z9VRVr/raw"))("ture")
     end
 })
 
-Tabs.Place:Button({
+matchs:Button({
     ["Title"] = "Teleport To Murderer",
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/IrRhoidd/raw"))("true")
@@ -1803,7 +1444,7 @@ local LocalPlayerPlace = PlayersPlace.LocalPlayer
 local LoopTeleportAllEnabled = false
 originalPosition = nil
 
-Tabs.Place:Toggle({
+matchs:Toggle({
     ["Title"] = "Loop Teleport Everyone",
     ["Value"] = false,
     ["Callback"] = function(State)
@@ -1839,14 +1480,22 @@ LocalPlayerPlace.CharacterAdded:Connect(function()
     end
 end)
 
-Tabs.Place:Button({
+local maintp = Tabs.Main:Section({
+    ["Title"] = "Map Teleport",
+    ["Icon"] = "",
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
+  })
+
+maintp:Button({
     ["Title"] = "Teleport To Lobby",
     ["Callback"] = function()
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-108.5, 142, 0.6)
     end
 })
 
-Tabs.Place:Button({
+maintp:Button({
     ["Title"] = "Teleport To Map",
     ["Callback"] = function()
         loadstring(game:HttpGet("https://pastefy.app/lvZs7ugv/raw"))("true")
@@ -1872,7 +1521,7 @@ Tabs.Fling:Button({
             miniFling(TargetPlayer)
         else
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                ["Title"] = "VexonHub",
+                ["Title"] = "Liquid Hub",
                 ["Text"] = "Sheriff Not found!",
                 ["Duration"] = 1
             })
