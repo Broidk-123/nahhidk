@@ -3,7 +3,7 @@ local player = Players.LocalPlayer
 
 -- 🔗 URLs
 local WINDUI_URL = "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"
-local SCRIPT_URL = "https://raw.githubusercontent.com/Broidk-123/nahhidk/073e6981d08e767c1f79988f2e4c963dc4618f15/scr/Idk.lua"
+local SCRIPT_URL = "https://raw.githubusercontent.com/Broidk-123/nahhidk/dae83d0a71dbd517f6b46e37f14c7a129aa584aa/scr/Idk.lua"
 
 -- 🚫 Blacklisted UserIds
 local Blacklist = {
