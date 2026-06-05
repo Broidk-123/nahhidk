@@ -54,9 +54,9 @@ pcall(function()
 end)
 
 local Window = WindUI:CreateWindow({
-	Title = "Liquid Hub",
-	Icon = "droplets",
-	Author = "Murder Mystery 2",
+	Title = "Liquid Hub | MM2",
+	Icon = "rbxassetid://109069296276521",
+	Author = "by Liquid Management",
 	Folder = "LiquidHub",
 	Size = UDim2.fromOffset(620, 500),
 	MinSize = Vector2.new(560, 360),
@@ -69,12 +69,16 @@ local Window = WindUI:CreateWindow({
 	HideSearchBar = false,
 	ScrollBarEnabled = true,
 	OpenButton = {
-		Title = "Liquid Hub",
+		Title = "Open UI",
 		Enabled = true,
 		Draggable = true,
-		OnlyMobile = false,
+		
 		CornerRadius = UDim.new(1, 0),
-		StrokeThickness = 2
+		StrokeThickness = 2,
+		Color =	ColorSequence.new(
+            Color3.fromHex("#063063"), -- Dark navy
+			Color3.fromHex("#38BDF8")  -- Sky blue
+    ),
 	}
 })
 
@@ -1717,8 +1721,7 @@ local function sendRolesToChat()
 		local sheriffName = sheriff and sheriff.Name or "-"
 
 		local message = string.format([[Murderer: %s |
-Sheriff: %s |
-<<YARHM>>]], murdererName, sheriffName)
+Sheriff: %s ]], murdererName, sheriffName)
 
 		textChannel:SendAsync(message)
 	end
@@ -2001,13 +2004,20 @@ local function holdEveryoneHostage()
 end
 
 local Tabs = {
+	Info = Window:Tab({
+		Title = "Dashboard",
+		Icon = "info",
+		ShowTabTitle = true,
+	}),
 	Main = Window:Tab({
 		Title = "Main",
-		Icon = "house"
+		Icon = "house",
+		ShowTabTitle = true,
 	}),
 	ESP = Window:Tab({
 		Title = "ESP",
-		Icon = "eye"
+		Icon = "eye",
+		ShowTabTitle = true,
 	}),
 	Sheriff = Window:Tab({
 		Title = "Sheriff",
@@ -2019,49 +2029,26 @@ local Tabs = {
 	}),
 	Player = Window:Tab({
 		Title = "Player",
-		Icon = "user"
+		Icon = "user",
+		ShowTabTitle = true,
 	}),
 	Utility = Window:Tab({
 		Title = "Utility",
-		Icon = "wrench"
+		Icon = "wrench",
+		ShowTabTitle = true,
 	}),
 	Settings = Window:Tab({
 		Title = "Settings",
-		Icon = "settings"
+		Icon = "settings",
+		ShowTabTitle = true,
 	})
 }
 
-local infoSection = Tabs.Main:Section({
-	Title = "Liquid Hub Information",
-	Opened = true
-})
 
-infoSection:Paragraph({
-	Title = "Liquid Hub",
-	Desc = "Professional WindUI hub for Murder Mystery 2.",
-	Image = "droplets",
-	ImageSize = 34
-})
 
-local creditsSection = Tabs.Main:Section({
-	Title = "Credits",
-	Opened = true
-})
 
-creditsSection:Paragraph({
-	Title = "Credits",
-	Desc = "YARHM MM2 module by Aetherion\nWindUI by Footagesus\nLiquid Hub migration"
-})
 
-local versionSection = Tabs.Main:Section({
-	Title = "Version",
-	Opened = true
-})
 
-versionSection:Paragraph({
-	Title = "Version",
-	Desc = "Liquid Hub v1.0.0\nWindUI " .. tostring(WindUI.Version or "Latest")
-})
 
 local statusSection = Tabs.Main:Section({
 	Title = "Status",
