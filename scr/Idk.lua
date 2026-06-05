@@ -38,7 +38,7 @@ local Roles = {
         ""
     },
 
-    User = {}
+    Free = {}
 }
 
 local function hasRole(roleName)
@@ -63,13 +63,8 @@ local isOwner = hasRole("Owner")
 local isAdmin = hasRole("Admin")
 local isBeta = hasRole("Beta")
 
--- Premium from Loader
-
-
-local isPremium = getgenv().Key == "Premium"
-
-
-
+-- Premium from Junkie
+local isPremium = getgenv().Access == "Premium"
 
 -- Colors
 local RoleColors = {
@@ -77,7 +72,7 @@ local RoleColors = {
     Admin = Color3.fromHex("#FF8C00"),
     Beta = Color3.fromHex("#A855F7"),
     Premium = Color3.fromHex("#00D4FF"),
-    User = Color3.fromHex("#30FF6A")
+    Free = Color3.fromHex("#30FF6A")
 }
 
 -- Icons
@@ -86,7 +81,7 @@ local RoleIcons = {
     Admin = "shield",
     Beta = "flask",
     Premium = "gem",
-    User = "user"
+    Free = "user"
 }
 
 local function getRole()
@@ -99,11 +94,12 @@ local function getRole()
     elseif isPremium then
         return "Premium"
     else
-        return "User"
+        return "Free"
     end
 end
 
 local roleName = getRole()
+
 
 
 
