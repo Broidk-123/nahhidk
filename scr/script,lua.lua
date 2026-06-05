@@ -2244,7 +2244,184 @@ task.spawn(function()
 end)
 
 
+local mainstack = Tabs.Main:HStack()
+local mainstack1 = mainstack:VStack()
+local mainstack2 = mainstack:VStack()
 
+local mrd = mainstack1:Section({
+		Title = "Murderer",
+		Icon = "sword",
+		TextXAlignment = "Center",
+		Opened = false,
+		Box = true,
+		BoxBorder = true,
+	})
+mrd:Toggle({
+	Title = "Kill Aura",
+	Desc = "Slashes nearby players within range.",
+	Icon = "activity",
+	Value = false,
+	Flag = "MurdererKillAura",
+	Callback = setMurdererKillAura
+})
+
+mrd:Button({
+	Title = "Kill Closest Player",
+	Desc = "Kills the closest player into slash range.",
+	Icon = "swords",
+	Callback = killClosestPlayerAsMurderer
+})
+
+
+mrd:Button({
+	Title = "Kill Everyone",
+	Desc = "Groups all players in slash range and attacks.",
+	Icon = "skull",
+	Callback = killEveryoneAsMurderer
+})
+
+mrd:Divider()
+
+mrd:Button({
+	Title = "Hostage Everyone",
+	Desc = "Places everyone together near you.",
+	Icon = "users-round",
+	Callback = holdEveryoneHostage
+})
+mrd:Divider()
+mrd:Divider()
+
+mrd:Button({
+	Title = "Knife Throw Nearby",
+	Desc = "Throws the knife at the nearest player.",
+	Icon = "send",
+	Callback = function()
+		knifeThrow(false)
+	end
+})
+
+mrd:Toggle({
+	Title = "Auto Knife Throw",
+	Desc = "Repeats closest-player knife throws.",
+	Icon = "repeat",
+	Value = false,
+	Flag = "AutoKnifeThrow",
+	Callback = function(state)
+		loopThrow = state
+	end
+})
+
+mrd:Toggle({
+	Title = "Spawn Knife Throw Near",
+	Desc = "Starts knife throws near the nearest player.",
+	Icon = "locate-fixed",
+	Value = false,
+	Flag = "SpawnKnifeThrowNearPlayer",
+	Callback = function(state)
+		spawnAtPlayer = state
+	end
+})
+
+local sher = mainstack2:Section({
+		Title = "Sheriff",
+		Icon = "",
+		TextXAlignment = "Center",
+		Opened = true,
+		Box = true,
+		BoxBorder = true,
+	})
+
+sher:Button({
+	Title = "Shoot Murderer",
+	Desc = "Shoots the murderer or non-local sheriff target.",
+	Icon = "crosshair",
+	Callback = shootMurderer
+})
+
+sher:Button({
+	Title = "Delayed Shoot Murderer",
+	Desc = "Waits the murderer to appear.",
+	Icon = "timer",
+	Callback = delayedShootMurderer
+})
+
+sher:Toggle({
+	Title = "Instant Kill Murderer",
+	Desc = "Changes sheriff shot CFrames for instant-kill shooting.",
+	Icon = "zap",
+	Value = false,
+	Flag = "InstakillMurderer",
+	Callback = function(state)
+		instakillshoot = state
+	end
+})
+
+
+sher:Slider({
+	Title = "Shoot Position Offset",
+	Desc = "Prediction offset for gun shots and knife throws.",
+	Step = 0.1,
+	Value = {
+		Min = -5,
+		Max = 10,
+		Default = shootOffset
+	},
+	Flag = "ShootPositionOffsetSlider",
+	Callback = function(value)
+		shootOffset = tonumber(value) or shootOffset
+	end
+})
+
+sher:Input({
+	Title = "Set Shoot Position Offset",
+	Desc = "Exact numeric offset.",
+	Value = tostring(shootOffset),
+	Placeholder = "2.8",
+	Type = "Input",
+	Flag = "ShootPositionOffsetInput",
+	Callback = setShootOffsetFromInput
+})
+
+sher:Slider({
+	Title = "Offset To Ping Multiplier",
+	Desc = "Scales prediction by latency.",
+	Step = 0.1,
+	Value = {
+		Min = -5,
+		Max = 10,
+		Default = offsetToPingMult
+	},
+	Flag = "OffsetToPingMultiplierSlider",
+	Callback = function(value)
+		offsetToPingMult = tonumber(value) or offsetToPingMult
+	end
+})
+
+sher:Input({
+	Title = "Set Offset To Ping Multiplier",
+	Desc = "Exact numeric ping multiplier.",
+	Value = tostring(offsetToPingMult),
+	Placeholder = "1",
+	Type = "Input",
+	Flag = "OffsetToPingMultiplierInput",
+	Callback = setPingMultiplierFromInput
+})
+
+sher:Toggle({
+	Title = "Use AI Prediction Engine",
+	Desc = "Uses ai prediction.",
+	Icon = "brain",
+	Value = false,
+	Flag = "UseAIPredictionEngine",
+	Callback = function(state)
+		predictionAIEngine = state
+	end
+})
+sher:Paragraph({
+	Title = "Prediction Notes",
+	Desc = "Shoot offset re-aims gun and knife throws to predicted positions.\nOffset-to-ping multiplier dynamically adjusts prediction with latency.",
+	Color = Color3.fromHex("#FF0000")
+})
 
 local playerEspSection = Tabs.ESP:Section({
 	Title = "Player ESP",
@@ -2255,17 +2432,15 @@ playerEspSection:Toggle({
 	Title = "Player ESP",
 	Desc = "Highlights murderer, sheriff, and players.",
 	Icon = "users",
-	Type = "Checkbox",
 	Value = false,
 	Flag = "PlayerESP",
 	Callback = setPlayerESP
 })
 
 playerEspSection:Toggle({
-	Title = "Hide Own ESP",
+	Title = "Hide Character Esp",
 	Desc = "Removes your own character from Player ESP.",
 	Icon = "eye-off",
-	Type = "Checkbox",
 	Value = false,
 	Flag = "HideOwnESP",
 	Callback = function(state)
@@ -2314,187 +2489,16 @@ timerSection:Toggle({
 	Callback = setRoundTimer
 })
 
-local sheriffActionsSection = Tabs.Sheriff:Section({
-	Title = "Sheriff Actions",
-	Opened = true
-})
 
-sheriffActionsSection:Button({
-	Title = "Shoot Murderer",
-	Desc = "Shoots the murderer or non-local sheriff target.",
-	Icon = "crosshair",
-	Callback = shootMurderer
-})
 
-sheriffActionsSection:Button({
-	Title = "Delayed Shoot Murderer",
-	Desc = "Waits until the murderer is in view, then fires.",
-	Icon = "timer",
-	Callback = delayedShootMurderer
-})
 
-sheriffActionsSection:Toggle({
-	Title = "Instakill Murderer",
-	Desc = "Changes sheriff shot CFrames for instant-kill shooting.",
-	Icon = "zap",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "InstakillMurderer",
-	Callback = function(state)
-		instakillshoot = state
-	end
-})
 
-local predictionSection = Tabs.Sheriff:Section({
-	Title = "Prediction",
-	Opened = true
-})
 
-predictionSection:Slider({
-	Title = "Shoot Position Offset",
-	Desc = "Prediction offset for gun shots and knife throws.",
-	Step = 0.1,
-	Value = {
-		Min = -5,
-		Max = 10,
-		Default = shootOffset
-	},
-	Flag = "ShootPositionOffsetSlider",
-	Callback = function(value)
-		shootOffset = tonumber(value) or shootOffset
-	end
-})
 
-predictionSection:Input({
-	Title = "Set Shoot Position Offset",
-	Desc = "Exact numeric offset. Recommended is 2.8.",
-	Value = tostring(shootOffset),
-	Placeholder = "2.8",
-	Type = "Input",
-	Flag = "ShootPositionOffsetInput",
-	Callback = setShootOffsetFromInput
-})
 
-predictionSection:Slider({
-	Title = "Offset To Ping Multiplier",
-	Desc = "Scales prediction by latency. Default is 1.",
-	Step = 0.1,
-	Value = {
-		Min = -5,
-		Max = 10,
-		Default = offsetToPingMult
-	},
-	Flag = "OffsetToPingMultiplierSlider",
-	Callback = function(value)
-		offsetToPingMult = tonumber(value) or offsetToPingMult
-	end
-})
 
-predictionSection:Input({
-	Title = "Set Offset To Ping Multiplier",
-	Desc = "Exact numeric ping multiplier.",
-	Value = tostring(offsetToPingMult),
-	Placeholder = "1",
-	Type = "Input",
-	Flag = "OffsetToPingMultiplierInput",
-	Callback = setPingMultiplierFromInput
-})
 
-predictionSection:Toggle({
-	Title = "Use AI Prediction Engine",
-	Desc = "Uses YARHM prediction when the engine is available.",
-	Icon = "brain",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "UseAIPredictionEngine",
-	Callback = function(state)
-		predictionAIEngine = state
-	end
-})
 
-predictionSection:Paragraph({
-	Title = "Prediction Notes",
-	Desc = "Shoot offset re-aims gun and knife throws to predicted positions.\nOffset-to-ping multiplier dynamically adjusts prediction with latency."
-})
-
-local murdererThrowSection = Tabs.Murderer:Section({
-	Title = "Knife Throw",
-	Opened = true
-})
-
-murdererThrowSection:Button({
-	Title = "Knife Throw Closest Player",
-	Desc = "Throws the knife at the nearest player.",
-	Icon = "send",
-	Callback = function()
-		knifeThrow(false)
-	end
-})
-
-murdererThrowSection:Toggle({
-	Title = "Auto Knife Throw",
-	Desc = "Repeats closest-player knife throws.",
-	Icon = "repeat",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "AutoKnifeThrow",
-	Callback = function(state)
-		loopThrow = state
-	end
-})
-
-murdererThrowSection:Toggle({
-	Title = "Spawn Knife Throw Near Player",
-	Desc = "Starts knife throws near the nearest player.",
-	Icon = "locate-fixed",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "SpawnKnifeThrowNearPlayer",
-	Callback = function(state)
-		spawnAtPlayer = state
-	end
-})
-
-local murdererKillSection = Tabs.Murderer:Section({
-	Title = "Murderer",
-	Opened = true
-})
-
-murdererKillSection:Button({
-	Title = "Kill Closest Player",
-	Desc = "Moves the nearest player into slash range.",
-	Icon = "swords",
-	Callback = killClosestPlayerAsMurderer
-})
-
-murdererKillSection:Toggle({
-	Title = "Murderer Kill Aura",
-	Desc = "Slashes nearby players within range.",
-	Icon = "activity",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "MurdererKillAura",
-	Callback = setMurdererKillAura
-})
-
-murdererKillSection:Button({
-	Title = "Kill Everyone",
-	Desc = "Groups all players in slash range and attacks.",
-	Icon = "skull",
-	Callback = killEveryoneAsMurderer
-})
-
-local murdererFunSection = Tabs.Murderer:Section({
-	Title = "Fun",
-	Opened = true
-})
-
-murdererFunSection:Button({
-	Title = "Hold Everyone Hostage",
-	Desc = "Places everyone together near you.",
-	Icon = "users-round",
-	Callback = holdEveryoneHostage
-})
 
 local playerMovementSection = Tabs.Player:Section({
 	Title = "Movement",
