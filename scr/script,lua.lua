@@ -2798,7 +2798,7 @@ settingsThemeSection:Dropdown({
 			end)
 
 			if ok then
-				fu.notification("Theme set to " .. themeName .. ".")
+				fu.notification("Theme Applied " .. themeName .. ".")
 			end
 		end
 	end
