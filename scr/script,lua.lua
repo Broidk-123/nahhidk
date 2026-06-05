@@ -2064,14 +2064,14 @@ local Tabs = {
 		Icon = "eye",
 		ShowTabTitle = true,
 	}),
-	Sheriff = Window:Tab({
+	--[[Sheriff = Window:Tab({
 		Title = "Sheriff",
 		Icon = "crosshair"
 	}),
 	Murderer = Window:Tab({
 		Title = "Murderer",
 		Icon = "knife"
-	}),
+	}),]]
 	Player = Window:Tab({
 		Title = "Player",
 		Icon = "user",
@@ -2322,9 +2322,28 @@ mrd:Toggle({
 	end
 })
 
+local inno = mainstack1:Section({
+		Title = "Innocent",
+		Icon = "blend",
+		TextXAlignment = "Center",
+		Opened = true,
+		Box = true,
+		BoxBorder = true,
+	})
+
+inno:Toggle({
+	Title = "Auto Get Gun",
+	Desc = "Automatically picks up the gun when it drops.",
+	Icon = "magnet",
+	Value = false,
+	Flag = "AutomaticallyGetGunOnDrop",
+	Callback = function(state)
+		autoGetDroppedGun = state
+	end
+})
 local sher = mainstack2:Section({
 		Title = "Sheriff",
-		Icon = "",
+		Icon = "crosshair",
 		TextXAlignment = "Center",
 		Opened = true,
 		Box = true,
@@ -2333,7 +2352,7 @@ local sher = mainstack2:Section({
 
 sher:Button({
 	Title = "Shoot Murderer",
-	Desc = "Shoots the murderer or non-local sheriff target.",
+	Desc = "Shoots the murderer",
 	Icon = "crosshair",
 	Callback = shootMurderer
 })
@@ -2355,7 +2374,7 @@ sher:Toggle({
 		instakillshoot = state
 	end
 })
-
+sher:Divider()
 
 sher:Slider({
 	Title = "Shoot Position Offset",
@@ -2425,10 +2444,14 @@ sher:Paragraph({
 
 local playerEspSection = Tabs.ESP:Section({
 	Title = "Player ESP",
-	Opened = true
+	Icon = "user",
+	Opened = true,
+	Box = true,
+	BoxBorder = true,
 })
 
-playerEspSection:Toggle({
+local espstackk = playerEspSection:HStack()
+espstackk:Toggle({
 	Title = "Player ESP",
 	Desc = "Highlights murderer, sheriff, and players.",
 	Icon = "users",
@@ -2437,7 +2460,7 @@ playerEspSection:Toggle({
 	Callback = setPlayerESP
 })
 
-playerEspSection:Toggle({
+espstackk:Toggle({
 	Title = "Hide Character Esp",
 	Desc = "Removes your own character from Player ESP.",
 	Icon = "eye-off",
@@ -2450,25 +2473,27 @@ playerEspSection:Toggle({
 })
 
 local worldEspSection = Tabs.ESP:Section({
-	Title = "World ESP",
-	Opened = true
+	Title = "More ESP",
+	Icon = "brush",
+	Opened = true,
+	Box = true,
+	BoxBorder = true,
 })
+local worldesp = worldEspSection:HStack()
 
-worldEspSection:Toggle({
+worldesp:Toggle({
 	Title = "Dropped Gun ESP",
 	Desc = "Highlights dropped gun with a yellow marker.",
 	Icon = "badge-alert",
-	Type = "Checkbox",
 	Value = false,
 	Flag = "DroppedGunESP",
 	Callback = setDroppedGunESP
 })
 
-worldEspSection:Toggle({
+worldesp:Toggle({
 	Title = "Trap ESP",
 	Desc = "Highlights murderer traps.",
 	Icon = "triangle-alert",
-	Type = "Checkbox",
 	Value = false,
 	Flag = "TrapESP",
 	Callback = setTrapESP
@@ -2480,10 +2505,9 @@ local timerSection = Tabs.ESP:Section({
 })
 
 timerSection:Toggle({
-	Title = "Round Timer",
+	Title = "Round Timer [BROKEN]",
 	Desc = "Shows the current MM2 round timer on screen.",
 	Icon = "clock",
-	Type = "Checkbox",
 	Value = false,
 	Flag = "RoundTimer",
 	Callback = setRoundTimer
@@ -2531,17 +2555,7 @@ local playerDefenseSection = Tabs.Player:Section({
 	Opened = true
 })
 
-playerDefenseSection:Toggle({
-	Title = "Automatically Get Gun On Drop",
-	Desc = "Automatically picks up the gun when it drops.",
-	Icon = "magnet",
-	Type = "Checkbox",
-	Value = false,
-	Flag = "AutomaticallyGetGunOnDrop",
-	Callback = function(state)
-		autoGetDroppedGun = state
-	end
-})
+
 
 playerDefenseSection:Toggle({
 	Title = "Ignore Knife Throws",
@@ -2582,8 +2596,8 @@ utilityRolesSection:Button({
 })
 
 utilityRolesSection:Button({
-	Title = "Send Sheriff And Murderer Names Into Chat",
-	Desc = "Posts current role names to chat.",
+	Title = "Expose Roles",
+	Desc = "Sends murderer and sheriff name to chat.",
 	Icon = "message-circle",
 	Callback = sendRolesToChat
 })
