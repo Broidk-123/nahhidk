@@ -1240,7 +1240,7 @@ CreateAutoExposeToggle("Auto Expose Sheriff", "Gun", "Sheriff")
 
 local notifn = Tabs.ESP:Section({
     ["Title"] = "Notify",
-    ["Icon"] = "alert-circle"
+    ["Icon"] = "alert-circle",
     ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
@@ -1552,17 +1552,17 @@ player:SetAttribute("JumpHeightEnabled", false)
 player:SetAttribute("JumpHeightValue", 50)
 
 local SpeedSlider = lpS:Slider({
-    Title = "Walkspeed",
-    Desc = "Set walkspeed value",
-    Icon = "sport-shoe",
-    Step = 1,
-    Value = {
+    ["Title"] = "Walkspeed",
+    ["Desc"] = "Set walkspeed value",
+    ["Icon"] = "sport-shoe",
+    ["Step"] = 1,
+    ["Value"] = {
         Min = 16,
         Max = 950,
         Default = 16
     },
 
-    Callback = function(Value)
+    ["Callback"] = function(Value)
         player:SetAttribute("WalkSpeedValue", Value)
 
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -1574,11 +1574,11 @@ local SpeedSlider = lpS:Slider({
 })
 
 lpS:Toggle({
-    Title = "Enable Walkspeed",
-    Icon = "sport-shoe",
-    Value = false,
+    ["Title"] = "Enable Walkspeed",
+    ["Icon"] = "sport-shoe",
+    ["Value"] = false,
 
-    Callback = function(Value)
+    ["Callback"] = function(Value)
         player:SetAttribute("WalkSpeedEnabled", Value)
 
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -1590,17 +1590,17 @@ lpS:Toggle({
 })
 
 local JumpSlider = lpS:Slider({
-    Title = "Jump Height",
-    Desc = "Set jump height value",
-    Icon = "arrow-big-up-dash",
-    Step = 1,
-    Value = {
+    ["Title"] = "Jump Height",
+    ["Desc"] = "Set jump height value",
+    ["Icon"] = "arrow-big-up-dash",
+    ["Step"] = 1,
+    ["Value"] = {
         Min = 50,
         Max = 1000,
         Default = 50
     },
 
-    Callback = function(Value)
+    ["Callback"] = function(Value)
         player:SetAttribute("JumpHeightValue", Value)
 
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -1612,11 +1612,11 @@ local JumpSlider = lpS:Slider({
 })
 
 lpS:Toggle({
-    Title = "Enable Jump Height",
-    Icon = "arrow-big-up-dash",
-    Value = false,
+    ["Title"] = "Enable Jump Height",
+    ["Icon"] = "arrow-big-up-dash",
+    ["Value"] = false,
 
-    Callback = function(Value)
+    ["Callback"] = function(Value)
         player:SetAttribute("JumpHeightEnabled", Value)
 
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -1628,11 +1628,11 @@ lpS:Toggle({
 })
 
 lpS:Button({
-    Title = "Reset Movement",
-    Desc = "Reset Walkspeed & Jump Height",
-    Icon = "rotate-ccw",
+    ["Title"] = "Reset Movement",
+    ["Desc"] = "Reset Walkspeed & Jump Height",
+    ["Icon"] = "rotate-ccw",
 
-    Callback = function()
+    ["Callback"] = function()
 
         player:SetAttribute("WalkSpeedEnabled", false)
         player:SetAttribute("WalkSpeedValue", 16)
