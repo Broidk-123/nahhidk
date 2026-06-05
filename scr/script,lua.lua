@@ -2144,43 +2144,109 @@ local gameParagraph = infostack:Paragraph({
 })
 
 Tabs.Main:Divider()
-local statusSection = Tabs.Main:Section({
-	Title = "Status",
-	Opened = true
+local statusstack = Tabs.Main:HStack()
+local Status1 = statusstack:VStack()
+local Status2 = statusstack:VStack()
+
+
+local HttpService = game:GetService("HttpService")
+
+-- Helper para makuha yung avatar thumbnail
+local function getAvatarUrl(userId)
+    local thumbUrl = "https://www.roblox.com/bust-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
+    pcall(function()
+        local response = request({
+            Url = "https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. userId .. "&size=420x420&format=Png&isCircular=false",
+            Method = "GET",
+        })
+        local data = HttpService:JSONDecode(response.Body)
+        if data and data.data and data.data[1] then
+            thumbUrl = data.data[1].imageUrl
+        end
+    end)
+    return thumbUrl
+end
+
+-- Paragraphs
+local roleParagraph = Status1:Paragraph({
+    Title = "Role",
+    Desc = "Loading...",
 })
 
-local statusParagraph = statusSection:Paragraph({
-	Title = "Status",
-	Desc = "Loading status..."
+local mapParagraph = Status1:Paragraph({
+    Title = "Map",
+    Desc = "Loading...",
 })
+
+local murdererParagraph = Status2:Paragraph({
+    Title = "Murderer",
+    Desc = "Loading...",
+})
+
+local sheriffParagraph = Status2:Paragraph({
+    Title = "Sheriff / Hero",
+    Desc = "Loading...",
+})
+
 
 local function updateStatus()
-	local murderer = findMurderer()
-	local sheriff = findSheriff()
-	local map = getMap()
+    local murderer = findMurderer()
+    local sheriff = findSheriff()
+    local map = getMap()
 
-	local role = "Innocent"
-	if murderer == LocalPlayer then
-		role = "Murderer"
-	elseif sheriff == LocalPlayer then
-		role = "Sheriff/Hero"
-	end
+    -- Role
+    local role = "Innocent"
+    if murderer == LocalPlayer then
+        role = "Murderer"
+    elseif sheriff == LocalPlayer then
+        role = "Sheriff/Hero"
+    end
 
-	statusParagraph:SetDesc(string.format(
-		"State: Loaded\nRole: %s\nMurderer: %s\nSheriff/Hero: %s\nMap: %s\nPing: %d ms",
-		role,
-		murderer and murderer.Name or "-",
-		sheriff and sheriff.Name or "-",
-		map and map.Name or "-",
-		math.round(LocalPlayer:GetNetworkPing() * 1000)
-	))
+    local myUrl = getAvatarUrl(LocalPlayer.UserId)
+    roleParagraph:SetTitle("Role — " .. role)
+    roleParagraph:SetDesc("@" .. LocalPlayer.Name .. "\nPing: " .. math.round(LocalPlayer:GetNetworkPing() * 1000) .. " ms")
+    roleParagraph:SetImage(myUrl)
+
+    -- Murderer
+    if murderer then
+        local murdererUrl = getAvatarUrl(murderer.UserId)
+        murdererParagraph:SetTitle("Murderer — " .. murderer.Name)
+        murdererParagraph:SetDesc("@" .. murderer.Name)
+        murdererParagraph:SetImage(murdererUrl)
+    else
+        murdererParagraph:SetTitle("Murderer")
+        murdererParagraph:SetDesc("Unknown")
+    end
+
+    -- Sheriff
+    if sheriff then
+        local sheriffUrl = getAvatarUrl(sheriff.UserId)
+        sheriffParagraph:SetTitle("Sheriff/Hero — " .. sheriff.Name)
+        sheriffParagraph:SetDesc("@" .. sheriff.Name)
+        sheriffParagraph:SetImage(sheriffUrl)
+    else
+        sheriffParagraph:SetTitle("Sheriff / Hero")
+        sheriffParagraph:SetDesc("Unknown")
+    end
+
+    -- Map
+    if map then
+        mapParagraph:SetTitle(map.Name)
+        mapParagraph:SetDesc("Current Map")
+    else
+        mapParagraph:SetTitle("Map")
+        mapParagraph:SetDesc("Loading...")
+    end
 end
 
 task.spawn(function()
-	while task.wait(2) do
-		pcall(updateStatus)
-	end
+    while task.wait(2) do
+        pcall(updateStatus)
+    end
 end)
+
+
+
 
 local playerEspSection = Tabs.ESP:Section({
 	Title = "Player ESP",
