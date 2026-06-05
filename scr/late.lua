@@ -185,7 +185,7 @@ local function notify(message, color, icon)
 		Icon = iconName
 	})
 end
-
+--[[
 local activeDialog
 local activeDialogEvent
 
@@ -246,12 +246,12 @@ local function closeDialog()
 	activeDialog = nil
 	activeDialogEvent = nil
 end
-
+]]
 local fu = {
 	notification = notify,
-	dialog = openDialog,
-	waitfordialog = waitForDialog,
-	closedialog = closeDialog
+	--dialog = openDialog,
+	--waitfordialog = waitForDialog,
+	--closedialog = closeDialog
 }
 
 local ESPIndicator = {}
@@ -974,6 +974,7 @@ local function reloadESP()
 	end
 end
 
+--[[
 if not ReplicatedStorage:WaitForChild("Remotes", 5) then
 	fu.dialog("Not MM2", "Looks like this game isn't MM2. Do you want to load the module anyway?", {
 		"Load",
@@ -996,7 +997,7 @@ else
 		end
 	end)
 end
-
+]]
 local function findNearestPlayer()
 	local nearestPlayer = nil
 	local shortestDistance = math.huge
