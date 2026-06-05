@@ -929,6 +929,18 @@ VStack2:Button({
 					})
 			end,
 })
+
+VStack2:Divider()
+
+VStack2:Button({
+		Title = "Open Roblox Console",
+		Icon = "square-chevron-right",
+		Callback = function()
+			pcall(function()
+					game:GetService("StarterGui"):SetCore("DevConsoleVisible", true)
+				end)
+		end
+	})
 --[[local gs2 = VStack3:Section({
 		Title = "User Info",
 		Icon = "user",
