@@ -2144,6 +2144,8 @@ local gameParagraph = infostack:Paragraph({
 })
 
 Tabs.Info:Divider()
+Tabs.Info:Section({ Title = "STATUS" })
+Tabs.Info:Divider()
 local statusstack = Tabs.Info:HStack()
 local Status1 = statusstack:VStack()
 local Status2 = statusstack:VStack()
@@ -2177,7 +2179,7 @@ local murdererParagraph = Status2:Paragraph({
 	ImageSize = 80,
 	Color = Color3.fromHex("#781313")
 })
-
+Status2:Divider()
 local sheriffParagraph = Status2:Paragraph({
     Title = "Sheriff / Hero",
     Desc = "Loading...",
