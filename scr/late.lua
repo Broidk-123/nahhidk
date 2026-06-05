@@ -167,6 +167,996 @@ MainWindow:EditOpenButton({
 
 MainWindow.ToggleKey = Enum.KeyCode.R
 
+
+
+----FUNC
+
+local function notify(message, color, icon)
+	local iconName = icon or "info"
+	if iconName == "x" then
+		iconName = "circle-x"
+	end
+
+	WindUI:Notify({
+		Title = "Liquid Hub",
+		Content = tostring(message),
+		Desc = tostring(message),
+		Duration = 5,
+		Icon = iconName
+	})
+end
+
+local activeDialog
+local activeDialogEvent
+
+local function openDialog(title, description, buttons)
+	if activeDialog then
+		pcall(function()
+			activeDialog:Close()
+		end)
+	end
+
+	if activeDialogEvent then
+		activeDialogEvent:Destroy()
+	end
+
+	activeDialogEvent = Instance.new("BindableEvent")
+
+	local dialogButtons = {}
+	for _, buttonTitle in ipairs(buttons or {}) do
+		table.insert(dialogButtons, {
+			Title = tostring(buttonTitle),
+			Callback = function()
+				if activeDialogEvent then
+					activeDialogEvent:Fire(tostring(buttonTitle))
+				end
+			end
+		})
+	end
+
+	activeDialog = Window:Dialog({
+		Title = title or "Liquid Hub",
+		Content = description or "",
+		Icon = "message-square",
+		Buttons = dialogButtons
+	})
+
+	activeDialog:Show()
+end
+
+local function waitForDialog()
+	if not activeDialogEvent then
+		return nil
+	end
+
+	return activeDialogEvent.Event:Wait()
+end
+
+local function closeDialog()
+	if activeDialog then
+		pcall(function()
+			activeDialog:Close()
+		end)
+	end
+
+	if activeDialogEvent then
+		activeDialogEvent:Destroy()
+	end
+
+	activeDialog = nil
+	activeDialogEvent = nil
+end
+
+local fu = {
+	notification = notify,
+	dialog = openDialog,
+	waitfordialog = waitForDialog,
+	closedialog = closeDialog
+}
+
+local ESPIndicator = {}
+ESPIndicator.__index = ESPIndicator
+ESPIndicator.Groups = {}
+ESPIndicator.TargetIndex = {}
+ESPIndicator.Defaults = {
+	AccentColor = Color3.new(1, 1, 0),
+	HighlightFillTransparency = 0.7,
+	HighlightOutlineTransparency = 0,
+	HighlightDepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+	ArrowShow = false,
+	ArrowEdgePadding = 50,
+	ArrowMinDistance = 0,
+	ArrowSize = UDim2.new(0, 30, 0, 30),
+	ArrowImage = "rbxassetid://97136202386756",
+	ArrowShowDistanceText = true,
+	ArrowDistanceFont = Enum.Font.Montserrat,
+	ArrowDistanceTextSize = 18,
+	ShowLabel = false,
+	LabelText = "Target",
+	LabelMaxDistance = 99999,
+	LabelOffset = Vector3.new(0, 2, 0)
+}
+
+local function targetPosition(target)
+	if not target then
+		return nil
+	end
+
+	if target:IsA("Model") then
+		local ok, pivot = pcall(function()
+			return target:GetPivot()
+		end)
+
+		if ok and pivot then
+			return pivot.Position
+		end
+
+		if target.PrimaryPart then
+			return target.PrimaryPart.Position
+		end
+	elseif target:IsA("BasePart") then
+		return target.Position
+	end
+
+	return nil
+end
+
+
+function ESPIndicator.new(options)
+	local self = setmetatable({}, ESPIndicator)
+	self.Settings = {}
+
+	for key, value in pairs(ESPIndicator.Defaults) do
+		self.Settings[key] = options and options[key] ~= nil and options[key] or value
+	end
+
+	self.Settings.Parent = options and options.Parent or getGuiParent()
+	self.ScreenGui = Instance.new("ScreenGui")
+	self.ScreenGui.Name = "LiquidHub_ESPIndicators"
+	self.ScreenGui.IgnoreGuiInset = true
+	self.ScreenGui.ResetOnSpawn = false
+	self.ScreenGui.Parent = self.Settings.Parent
+
+	self.ArrowTemplate = Instance.new("ImageLabel")
+	self.ArrowTemplate.Name = "ArrowTemplate"
+	self.ArrowTemplate.Size = self.Settings.ArrowSize
+	self.ArrowTemplate.AnchorPoint = Vector2.new(0.5, 0.5)
+	self.ArrowTemplate.BackgroundTransparency = 1
+	self.ArrowTemplate.Image = self.Settings.ArrowImage
+	self.ArrowTemplate.ImageColor3 = self.Settings.AccentColor
+	self.ArrowTemplate.Visible = false
+	self.ArrowTemplate.Parent = self.ScreenGui
+
+	local scaler = Instance.new("UIScale")
+	scaler.Name = "Scaler"
+	scaler.Scale = 0
+	scaler.Parent = self.ArrowTemplate
+
+	self.Indicators = {}
+	self._updateConn = RunService.RenderStepped:Connect(function()
+		self:_update()
+	end)
+
+	self._cleanupConn = RunService.Heartbeat:Connect(function()
+		self:_cleanupOrphanedArrows()
+		self:_cleanupOrphanedHighlights()
+		self:_cleanupOrphanedLabels()
+	end)
+
+	return self
+end
+
+function ESPIndicator:AddGroup(groupName)
+	local group = ESPIndicator.Groups[groupName]
+	if not group then
+		group = {
+			enabled = true,
+			properties = {},
+			targets = {}
+		}
+		ESPIndicator.Groups[groupName] = group
+	end
+
+	return group
+end
+
+function ESPIndicator:GetGroup(groupName)
+	return ESPIndicator.Groups[groupName]
+end
+
+function ESPIndicator:RemoveGroup(groupName)
+	local group = ESPIndicator.Groups[groupName]
+	if not group then
+		return false
+	end
+
+	local targets = table.clone(group.targets)
+	for _, target in ipairs(targets) do
+		local targetGroups = ESPIndicator.TargetIndex[target]
+		if targetGroups then
+			for index, indexedGroupName in ipairs(targetGroups) do
+				if indexedGroupName == groupName then
+					table.remove(targetGroups, index)
+					break
+				end
+			end
+
+			if #targetGroups == 0 then
+				ESPIndicator.TargetIndex[target] = nil
+			end
+		end
+
+		if not ESPIndicator.TargetIndex[target] then
+			self:Remove(target)
+		end
+	end
+
+	ESPIndicator.Groups[groupName] = nil
+	return true
+end
+
+function ESPIndicator:ClearAllGroups()
+	for groupName in pairs(ESPIndicator.Groups) do
+		self:RemoveGroup(groupName)
+	end
+end
+
+function ESPIndicator:ToggleGroup(groupName, enabled)
+	local group = ESPIndicator.Groups[groupName]
+	if not group then
+		return nil
+	end
+
+	group.enabled = enabled ~= nil and enabled or not group.enabled
+
+	for _, target in ipairs(group.targets) do
+		local indicator = self.Indicators[target]
+		if indicator then
+			if indicator.Highlight then
+				indicator.Highlight.Enabled = group.enabled
+			end
+
+			if indicator.Arrow then
+				indicator.Arrow.Visible = group.enabled and (indicator.Options.ArrowShow or self.Settings.ArrowShow)
+			end
+
+			if indicator.Label then
+				indicator.Label.Enabled = group.enabled
+			end
+		end
+	end
+
+	return group.enabled
+end
+
+function ESPIndicator:SetGroupProperty(groupName, propertyName, value)
+	local group = self:AddGroup(groupName)
+	group.properties[propertyName] = value
+
+	for _, target in ipairs(group.targets) do
+		local indicator = self.Indicators[target]
+		if indicator and propertyName == "AccentColor" then
+			if indicator.Highlight then
+				indicator.Highlight.FillColor = value
+				indicator.Highlight.OutlineColor = value
+			end
+
+			if indicator.Arrow then
+				indicator.Arrow.ImageColor3 = value
+			end
+
+			if indicator.DistanceLabel then
+				indicator.DistanceLabel.TextColor3 = value
+			end
+
+			if indicator.Label and indicator.Label:FindFirstChild("TextLabel") then
+				indicator.Label.TextLabel.TextColor3 = value
+			end
+		end
+	end
+end
+
+function ESPIndicator:Add(target, options)
+	assert(target, "ESPIndicator:Add requires a non-nil target")
+
+	if self.Indicators[target] then
+		self:Remove(target)
+	end
+
+	options = options or {}
+
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "Highlight_" .. HttpService:GenerateGUID(false)
+	highlight.Adornee = target
+	highlight.FillTransparency = options.HighlightFillTransparency or self.Settings.HighlightFillTransparency
+	highlight.FillColor = options.AccentColor or self.Settings.AccentColor
+	highlight.OutlineColor = options.AccentColor or self.Settings.AccentColor
+	highlight.OutlineTransparency = options.HighlightOutlineTransparency or self.Settings.HighlightOutlineTransparency
+	highlight.DepthMode = options.HighlightDepthMode or self.Settings.HighlightDepthMode
+	highlight.Parent = self.ScreenGui
+
+	local arrow
+	local arrowScaler
+	local distanceLabel
+
+	if options.ArrowShow or self.Settings.ArrowShow then
+		arrow = self.ArrowTemplate:Clone()
+		arrow.Name = "Arrow_" .. HttpService:GenerateGUID(false)
+		arrow.ImageColor3 = options.AccentColor or self.Settings.AccentColor
+		arrow.Visible = true
+		arrow.Parent = self.ScreenGui
+
+		arrowScaler = arrow:FindFirstChild("Scaler")
+
+		if options.ArrowShowDistanceText or self.Settings.ArrowShowDistanceText then
+			distanceLabel = Instance.new("TextLabel")
+			distanceLabel.Name = "DistanceLabel"
+			distanceLabel.AnchorPoint = Vector2.new(0.5, 0)
+			distanceLabel.BackgroundTransparency = 1
+			distanceLabel.Font = options.ArrowDistanceFont or self.Settings.ArrowDistanceFont
+			distanceLabel.TextSize = options.ArrowDistanceTextSize or self.Settings.ArrowDistanceTextSize
+			distanceLabel.TextColor3 = options.AccentColor or self.Settings.AccentColor
+			distanceLabel.Parent = arrow
+		end
+	end
+
+	local label
+	if options.ShowLabel or self.Settings.ShowLabel then
+		label = Instance.new("BillboardGui")
+		label.Name = "Label_" .. HttpService:GenerateGUID(false)
+		label.AlwaysOnTop = true
+		label.MaxDistance = self.Settings.LabelMaxDistance
+		label.Size = UDim2.new(0, 70, 0, 70)
+		label.StudsOffset = self.Settings.LabelOffset
+		label.Adornee = target
+		label.Parent = self.ScreenGui
+
+		local textLabel = Instance.new("TextLabel")
+		textLabel.Name = "TextLabel"
+		textLabel.Size = UDim2.new(1, 0, 1, 0)
+		textLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+		textLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+		textLabel.BackgroundTransparency = 1
+		textLabel.Font = Enum.Font.SourceSansBold
+		textLabel.TextScaled = true
+		textLabel.TextWrapped = true
+		textLabel.TextSize = 14
+		textLabel.TextColor3 = options.AccentColor or self.Settings.AccentColor
+		textLabel.Text = options.LabelText or self.Settings.LabelText
+		textLabel.Parent = label
+		Instance.new("UIStroke", textLabel)
+	end
+
+	self.Indicators[target] = {
+		Highlight = highlight,
+		Arrow = arrow,
+		Scaler = arrowScaler,
+		DistanceLabel = distanceLabel,
+		Label = label,
+		Options = options
+	}
+
+	local groupName = options.GroupName or self.Settings.GroupName
+	if groupName then
+		self:AddToGroup(target, groupName)
+	end
+end
+
+function ESPIndicator:Remove(target)
+	local indicator = self.Indicators[target]
+	if not indicator then
+		return
+	end
+
+	if indicator.Highlight then
+		indicator.Highlight.Adornee = nil
+		indicator.Highlight:Destroy()
+	end
+
+	if indicator.Arrow then
+		indicator.Arrow:Destroy()
+	end
+
+	if indicator.Label then
+		indicator.Label:Destroy()
+	end
+
+	local targetGroups = ESPIndicator.TargetIndex[target]
+	if targetGroups then
+		for _, groupName in ipairs(targetGroups) do
+			local group = ESPIndicator.Groups[groupName]
+			if group then
+				for index, groupedTarget in ipairs(group.targets) do
+					if groupedTarget == target then
+						table.remove(group.targets, index)
+						break
+					end
+				end
+			end
+		end
+		ESPIndicator.TargetIndex[target] = nil
+	end
+
+	self.Indicators[target] = nil
+end
+
+function ESPIndicator:AddToGroup(target, groupName)
+	local group = self:AddGroup(groupName)
+
+	if not table.find(group.targets, target) then
+		table.insert(group.targets, target)
+	end
+
+	local targetGroups = ESPIndicator.TargetIndex[target]
+	if not targetGroups then
+		targetGroups = {}
+		ESPIndicator.TargetIndex[target] = targetGroups
+	end
+
+	if not table.find(targetGroups, groupName) then
+		table.insert(targetGroups, groupName)
+	end
+
+	for propertyName, value in pairs(group.properties) do
+		self:SetGroupProperty(groupName, propertyName, value)
+	end
+
+	if not group.enabled then
+		local indicator = self.Indicators[target]
+		if indicator and indicator.Highlight then
+			indicator.Highlight.Enabled = false
+		end
+	end
+
+	return true
+end
+
+function ESPIndicator:RemoveFromGroup(target, groupName)
+	local group = ESPIndicator.Groups[groupName]
+	if not group then
+		return false
+	end
+
+	for index, groupedTarget in ipairs(group.targets) do
+		if groupedTarget == target then
+			table.remove(group.targets, index)
+			break
+		end
+	end
+
+	local targetGroups = ESPIndicator.TargetIndex[target]
+	if targetGroups then
+		for index, indexedGroupName in ipairs(targetGroups) do
+			if indexedGroupName == groupName then
+				table.remove(targetGroups, index)
+				break
+			end
+		end
+
+		if #targetGroups == 0 then
+			ESPIndicator.TargetIndex[target] = nil
+		end
+	end
+
+	return true
+end
+
+function ESPIndicator:GetGroupTargets(groupName)
+	local group = ESPIndicator.Groups[groupName]
+	return group and group.targets or {}
+end
+
+function ESPIndicator:GetTargetGroups(target)
+	return ESPIndicator.TargetIndex[target] or {}
+end
+
+function ESPIndicator:_allHighlights()
+	local highlights = {}
+	for _, indicator in pairs(self.Indicators) do
+		if indicator.Highlight then
+			table.insert(highlights, indicator.Highlight)
+		end
+	end
+	return highlights
+end
+
+function ESPIndicator:_allArrows()
+	local arrows = {}
+	for _, indicator in pairs(self.Indicators) do
+		if indicator.Arrow then
+			table.insert(arrows, indicator.Arrow)
+		end
+	end
+	return arrows
+end
+
+function ESPIndicator:_allLabels()
+	local labels = {}
+	for _, indicator in pairs(self.Indicators) do
+		if indicator.Label then
+			table.insert(labels, indicator.Label)
+		end
+	end
+	return labels
+end
+
+function ESPIndicator:_cleanupOrphanedHighlights()
+	for _, child in ipairs(self.ScreenGui:GetChildren()) do
+		if child:IsA("Highlight") and not table.find(self:_allHighlights(), child) then
+			child.Adornee = nil
+			child:Destroy()
+		end
+	end
+end
+
+function ESPIndicator:_cleanupOrphanedArrows()
+	for _, child in ipairs(self.ScreenGui:GetChildren()) do
+		if child:IsA("ImageLabel") and child.Name:match("^Arrow_") and not table.find(self:_allArrows(), child) then
+			child:Destroy()
+		end
+	end
+end
+
+function ESPIndicator:_cleanupOrphanedLabels()
+	for _, child in ipairs(self.ScreenGui:GetChildren()) do
+		if child:IsA("BillboardGui") and child.Name:match("^Label_") and not table.find(self:_allLabels(), child) then
+			child.Adornee = nil
+			child:Destroy()
+		end
+	end
+end
+
+function ESPIndicator:_update()
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return
+	end
+
+	local viewportSize = camera.ViewportSize
+	local width = viewportSize.X
+	local height = viewportSize.Y
+
+	for target, indicator in pairs(self.Indicators) do
+		if not target or not target.Parent then
+			self:Remove(target)
+			continue
+		end
+
+		local arrow = indicator.Arrow
+		local scaler = indicator.Scaler
+		if not arrow then
+			continue
+		end
+
+		local position = targetPosition(target)
+		if not position then
+			continue
+		end
+
+		local viewportPoint, onScreen = camera:WorldToViewportPoint(position)
+		local distance = (camera.CFrame.Position - position).Magnitude
+		local minDistance = indicator.Options.ArrowMinDistance or self.Settings.ArrowMinDistance
+		local edgePadding = indicator.Options.ArrowEdgePadding or self.Settings.ArrowEdgePadding
+
+		if onScreen and distance > minDistance then
+			TweenService:Create(scaler, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Scale = 0
+			}):Play()
+		else
+			TweenService:Create(scaler, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Scale = 1
+			}):Play()
+
+			local clampedX = math.clamp(viewportPoint.X, edgePadding, width - edgePadding)
+			local clampedY = math.clamp(viewportPoint.Y, edgePadding, height - edgePadding)
+
+			if clampedX == viewportPoint.X and clampedY == viewportPoint.Y and onScreen then
+				TweenService:Create(scaler, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Scale = 0
+				}):Play()
+			else
+				local objectSpace = camera.CFrame:VectorToObjectSpace(position - camera.CFrame.Position)
+				local direction = Vector2.new(objectSpace.X, objectSpace.Y).Unit
+				local usableWidth = width - edgePadding * 2
+				local usableHeight = height - edgePadding * 2
+				local borderVector
+
+				if math.abs(direction.Y) > usableHeight / 2 then
+					borderVector = direction * math.abs((usableHeight / 2) / direction.Y)
+				else
+					borderVector = direction * math.abs((usableWidth / 2) / direction.X)
+				end
+
+				local x = width / 2 + borderVector.X
+				local y = height / 2 - borderVector.Y
+				local rotation = math.atan2(direction.X, direction.Y)
+
+				TweenService:Create(arrow, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Position = UDim2.fromOffset(x, y),
+					Rotation = math.deg(rotation)
+				}):Play()
+			end
+
+			if indicator.DistanceLabel then
+				indicator.DistanceLabel.Text = string.format("%dm", math.round(distance))
+				local arrowSize = (indicator.Options.ArrowSize and indicator.Options.ArrowSize.Y.Offset or self.Settings.ArrowSize.Y.Offset) + 16
+				indicator.DistanceLabel.Position = UDim2.new(0.5, 0, 0, arrowSize)
+			end
+		end
+	end
+end
+
+function ESPIndicator:Destroy()
+	if self._updateConn then
+		self._updateConn:Disconnect()
+	end
+
+	if self._cleanupConn then
+		self._cleanupConn:Disconnect()
+	end
+
+	self:ClearAllGroups()
+
+	for _, indicator in pairs(self.Indicators) do
+		if indicator.Highlight then
+			indicator.Highlight:Destroy()
+		end
+		if indicator.Arrow then
+			indicator.Arrow:Destroy()
+		end
+		if indicator.Label then
+			indicator.Label:Destroy()
+		end
+	end
+
+	self.ScreenGui:Destroy()
+	self.Indicators = {}
+	ESPIndicator.Groups = {}
+	ESPIndicator.TargetIndex = {}
+end
+
+local espcontainer = ESPIndicator.new({
+	ArrowEdgePadding = 50,
+	ArrowShowDistanceText = false
+})
+
+local playerESP = false
+local sheriffAimbot = false
+local coinAutoCollect = false
+local autoShooting = false
+local shootOffset = 2.8
+local offsetToPingMult = 1
+local predictionAIEngine = false
+local predictionOngoing = false
+local predictionCooldown = false
+local gunDropESP = false
+local trapDetection = false
+local autoGetDroppedGun = false
+local simulateKnifeThrow = false
+local spawnAtPlayer = false
+local loopThrow = false
+local hideMeEsp = false
+local ignoreknifethrow = false
+local instakillshoot = false
+local playerData = {}
+local claimedCoins = {}
+local playerToExamineIsSpamJumping = false
+local onTesting = game.GameId == 119460199
+
+local function findMurderer()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player:FindFirstChild("Backpack") and player.Backpack:FindFirstChild("Knife") then
+			return player
+		end
+	end
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player.Character and player.Character:FindFirstChild("Knife") then
+			return player
+		end
+	end
+
+	for playerName, data in pairs(playerData or {}) do
+		if data.Role == "Murderer" then
+			local player = Players:FindFirstChild(playerName)
+			if player then
+				return player
+			end
+		end
+	end
+
+	return nil
+end
+
+local function findSheriff()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player:FindFirstChild("Backpack") and player.Backpack:FindFirstChild("Gun") then
+			return player
+		end
+	end
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player.Character and player.Character:FindFirstChild("Gun") then
+			return player
+		end
+	end
+
+	for playerName, data in pairs(playerData or {}) do
+		if data.Role == "Sheriff" then
+			local player = Players:FindFirstChild(playerName)
+			if player then
+				return player
+			end
+		end
+	end
+
+	return nil
+end
+
+local function findSheriffThatsNotMe()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player:FindFirstChild("Backpack") and player.Backpack:FindFirstChild("Gun") then
+			return player
+		end
+	end
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Gun") then
+			return player
+		end
+	end
+
+	for playerName, data in pairs(playerData or {}) do
+		if data.Role == "Sheriff" then
+			local player = Players:FindFirstChild(playerName)
+			if player and player ~= LocalPlayer then
+				return player
+			end
+		end
+	end
+
+	return nil
+end
+
+local function getMap()
+	for _, object in ipairs(Workspace:GetChildren()) do
+		if object:FindFirstChild("CoinContainer") and object:FindFirstChild("Spawns") then
+			return object
+		end
+	end
+
+	return nil
+end
+
+local function reloadESP()
+	if not playerESP then
+		return
+	end
+
+	espcontainer:RemoveGroup("players")
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player == LocalPlayer and hideMeEsp then
+			continue
+		end
+
+		if player.Character then
+			local character = player.Character
+
+			task.spawn(function()
+				if player == findMurderer() then
+					espcontainer:Add(character, {
+						AccentColor = Color3.new(1, 0, 0.0156863),
+						ArrowShow = true,
+						ArrowMinDistance = 999999,
+						ArrowSize = UDim2.new(0, 40, 0, 40),
+						LabelText = "Murderer",
+						ShowLabel = true,
+						GroupName = "players"
+					})
+				elseif player == findSheriff() then
+					espcontainer:Add(character, {
+						AccentColor = Color3.new(0, 0.6, 1),
+						ArrowShow = false,
+						ShowLabel = false,
+						GroupName = "players"
+					})
+				else
+					espcontainer:Add(character, {
+						AccentColor = Color3.new(0, 1, 0.0313725),
+						ArrowShow = false,
+						ShowLabel = false,
+						GroupName = "players"
+					})
+				end
+			end)
+		end
+	end
+end
+
+if not ReplicatedStorage:WaitForChild("Remotes", 5) then
+	fu.dialog("Not MM2", "Looks like this game isn't MM2. Do you want to load the module anyway?", {
+		"Load",
+		"No"
+	})
+
+	if fu.waitfordialog() == "No" then
+		fu.closedialog()
+		fu.notification("MM2 will not be loaded until you rejoin.", Color3.fromRGB(255, 0, 0), "x")
+		return
+	end
+
+	fu.closedialog()
+else
+	ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("PlayerDataChanged", 5).OnClientEvent:Connect(function(data)
+		playerData = data
+
+		if playerESP then
+			reloadESP()
+		end
+	end)
+end
+
+local function findNearestPlayer()
+	local nearestPlayer = nil
+	local shortestDistance = math.huge
+	local localCharacter = LocalPlayer.Character
+	local localRootPart = localCharacter and localCharacter:FindFirstChild("HumanoidRootPart")
+
+	if not localRootPart then
+		return nil
+	end
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character then
+			local otherRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+			if otherRootPart then
+				local distance = (localRootPart.Position - otherRootPart.Position).Magnitude
+				if distance < shortestDistance then
+					shortestDistance = distance
+					nearestPlayer = player
+				end
+			end
+		end
+	end
+
+	return nearestPlayer
+end
+
+local function miniFling(playerToFling)
+	if not playerToFling or not playerToFling.Character then
+		fu.notification("No valid character of said target player. May have died.")
+		return
+	end
+
+	local playersService = game:GetService("Players")
+	local localPlayer = playersService.LocalPlayer
+	local flingActive = false
+
+	getgenv().FPDH = getgenv().FPDH or Workspace.FallenPartsDestroyHeight
+
+	local function runFling(targetPlayer)
+		local localCharacter = localPlayer.Character
+		local localHumanoid = localCharacter and localCharacter:FindFirstChildOfClass("Humanoid")
+		local localRootPart = localHumanoid and localHumanoid.RootPart
+		local targetCharacter = targetPlayer.Character
+
+		if not targetCharacter then
+			fu.notification("No valid character of said target player. May have died.")
+			return
+		end
+
+		local targetHumanoid = targetCharacter:FindFirstChildOfClass("Humanoid")
+		local targetRootPart = targetHumanoid and targetHumanoid.RootPart
+		local targetHead = targetCharacter:FindFirstChild("Head")
+		local targetAccessory = targetCharacter:FindFirstChildOfClass("Accessory")
+		local targetHandle = targetAccessory and targetAccessory:FindFirstChild("Handle")
+
+		if not localCharacter or not localHumanoid or not localRootPart then
+			fu.notification("No valid character of said target player. May have died.")
+			return
+		end
+
+		if localRootPart.Velocity.Magnitude < 50 then
+			getgenv().OldPos = localRootPart.CFrame
+		end
+
+		if targetHead and targetHead.Velocity.Magnitude > 500 then
+			fu.dialog("Player flung", "Player is already flung. Fling again?", {
+				"Fling again",
+				"No"
+			})
+			if fu.waitfordialog() == "No" then
+				return fu.closedialog()
+			end
+			fu.closedialog()
+		elseif not targetHead and targetHandle and targetHandle.Velocity.Magnitude > 500 then
+			fu.dialog("Player flung", "Player is already flung. Fling again?", {
+				"Fling again",
+				"No"
+			})
+			if fu.waitfordialog() == "No" then
+				return fu.closedialog()
+			end
+			fu.closedialog()
+		end
+
+		if targetHead then
+			Workspace.CurrentCamera.CameraSubject = targetHead
+		elseif targetHandle then
+			Workspace.CurrentCamera.CameraSubject = targetHandle
+		elseif targetHumanoid and targetRootPart then
+			Workspace.CurrentCamera.CameraSubject = targetHumanoid
+		end
+
+		if not targetCharacter:FindFirstChildWhichIsA("BasePart") then
+			return
+		end
+
+		local function setFlingPosition(part, offset, angle)
+			localRootPart.CFrame = CFrame.new(part.Position) * offset * angle
+			localCharacter:SetPrimaryPartCFrame(CFrame.new(part.Position) * offset * angle)
+			localRootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+			localRootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+		end
+
+		local function flingPart(part)
+			local timeout = 2
+			local start = tick()
+			local angle = 0
+
+			repeat
+				if localRootPart and targetHumanoid then
+					if part.Velocity.Magnitude < 50 then
+						angle += 100
+						setFlingPosition(part, CFrame.new(0, 1.5, 0) + targetHumanoid.MoveDirection * part.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0) + targetHumanoid.MoveDirection * part.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(2.25, 1.5, -2.25) + targetHumanoid.MoveDirection * part.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(-2.25, -1.5, 2.25) + targetHumanoid.MoveDirection * part.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, 1.5, 0) + targetHumanoid.MoveDirection, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0) + targetHumanoid.MoveDirection, CFrame.Angles(math.rad(angle), 0, 0))
+						task.wait()
+					else
+						setFlingPosition(part, CFrame.new(0, 1.5, targetHumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, -targetHumanoid.WalkSpeed), CFrame.Angles(0, 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, 1.5, targetHumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, 1.5, targetRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, -targetRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, 1.5, targetRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(-90), 0, 0))
+						task.wait()
+						setFlingPosition(part, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+						task.wait()
+					end
+				else
+					break
+				end
+			until part.Velocity.Magnitude > 500
+				or part.Parent ~= targetPlayer.Character
+				or targetPlayer.Parent ~= playersService
+				or targetPlayer.Character ~= targetCharacter
+				or targetHumanoid.Sit
+				or localHumanoid.Health <= 0
+				or tick() > start + timeout
+		end
+
+		
+-------- TAB
 local Tabs = {}
 
 Tabs.Info = MainWindow:Tab({
