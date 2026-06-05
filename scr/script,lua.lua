@@ -2143,8 +2143,8 @@ local gameParagraph = infostack:Paragraph({
     Locked = false,
 })
 
-Tabs.Main:Divider()
-local statusstack = Tabs.Main:HStack()
+Tabs.Info:Divider()
+local statusstack = Tabs.Info:HStack()
 local Status1 = statusstack:VStack()
 local Status2 = statusstack:VStack()
 
