@@ -144,7 +144,7 @@ local MainWindow = WindUI:CreateWindow({
 })
 
 
-function getMap()
+--[[function getMap()
     for _, Child in ipairs(workspace:GetChildren()) do
         if Child:FindFirstChild("CoinContainer") and Child:FindFirstChild("Spawns") then
             return Child
@@ -154,7 +154,7 @@ function getMap()
 end
 
 loadstring(game:HttpGet("https://pastefy.app/hcVkWhQF/raw"))()
-
+]]
 MainWindow:EditOpenButton({
     ["Title"] = "Open UI",
     ["CornerRadius"] = UDim.new(0, 6),
