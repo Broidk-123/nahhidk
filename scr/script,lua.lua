@@ -2175,12 +2175,20 @@ local murdererParagraph = Status2:Paragraph({
     Title = "Murderer",
     Desc = "Loading...",
 	ImageSize = 80,
+	Color = ColorSequence.new(
+			Color3.fromHex("#f50c0c"),
+			Color3.fromHex("#540202")
+		)
 })
 
 local sheriffParagraph = Status2:Paragraph({
     Title = "Sheriff / Hero",
     Desc = "Loading...",
 	ImageSize = 80,
+	Color = ColorSequence.new(
+			Color3.fromHex("#21739c"),
+			Color3.fromHex("#35cefc")
+		)
 })
 
 
