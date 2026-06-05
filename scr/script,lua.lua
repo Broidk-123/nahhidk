@@ -18,6 +18,7 @@ local RunService = game:GetService("RunService")
 local TextChatService = game:GetService("TextChatService")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
+local player = Players.LocalPlayer
 
 local function getGuiParent()
 	if gethui then
@@ -40,6 +41,50 @@ end
 
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
+WindUI:Popup({
+    Title = "Welcome, ".. player.Name.. "!",
+    Icon = "rbxassetid://109069296276521",
+    Content = "Hello! Thanks for using our script! Join to our discord server!",
+    Buttons = {
+        {
+            Title = "Get Started",
+            Icon = "arrow-right",
+			Variant = "Primary",
+            Callback = function() 
+	
+WindUI:Notify({
+                Title = "Liquid Hub • Loaded!",
+                Content = "Murder Mystery 2 script loaded.",
+                Duration = 12, -- 3 seconds
+                Icon = "rbxassetid://109069296276521",
+})
+
+WindUI:Notify({
+                Title = "Liquid Hub",
+                Content = "Explore the features of the script, enjoy!",
+                Duration = 10, -- 3 seconds
+                Icon = "rbxassetid://109069296276521",
+})
+					
+				end,
+            
+        },
+			--[[{
+				Title = "Discord",
+				Icon = "Copy",
+				Variant = "Secondary",
+				Callback = function()
+					setclipboard("https://discord.gg/jYkbeWtYsf")
+					WindUI:Notify({
+							Title = "Liquid Hub",
+							Content = "Discord Server copied to clipboard!",
+							Icon = "check-circle",
+							Duration = 3,
+						})
+						end
+					},]]
+    }
+})
 pcall(function()
 	WindUI:AddTheme({
 		Name = "Liquid",
@@ -2046,10 +2091,59 @@ local Tabs = {
 
 
 
+local infostack = Tabs.Info:HStack()
 
 
 
 
+
+local username = player.Name
+local displayName = player.DisplayName
+local userId = player.UserId
+
+-- Avatar Image
+local userImage = string.format(
+    "https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png",
+    userId
+)
+
+local userParagraph = infostack:Paragraph({
+    Title = displayName, -- 🔥
+    Desc = "@" .. username, -- 🔥 
+    Image = userImage,
+    ImageSize = 67,
+    
+})
+
+local placeId = game.PlaceId
+local gameName = "Unknown Game"
+local creatorName = "Unknown"
+
+pcall(function()
+    local info = MarketplaceService:GetProductInfo(placeId)
+    gameName = info.Name
+
+    -- Creator info
+    if info.Creator and info.Creator.Name then
+        creatorName = info.Creator.Name
+    end
+end)
+
+-- Game Thumbnail
+local gameImage = string.format(
+    "https://www.roblox.com/asset-thumbnail/image?assetId=%d&width=420&height=420&format=png",
+    placeId
+)
+
+local gameParagraph = infostack:Paragraph({
+    Title = gameName, -- 🔥 Game Name sa Title
+    Desc = "@" .. creatorName, -- 🔥 Creator username
+    Image = gameImage,
+    ImageSize = 70,
+    Locked = false,
+})
+
+Tabs.Main:Divider()
 local statusSection = Tabs.Main:Section({
 	Title = "Status",
 	Opened = true
