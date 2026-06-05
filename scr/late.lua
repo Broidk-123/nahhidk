@@ -214,7 +214,7 @@ local function openDialog(title, description, buttons)
 		})
 	end
 
-	activeDialog = Window:Dialog({
+	activeDialog = MainWindow:Dialog({
 		Title = title or "Liquid Hub",
 		Content = description or "",
 		Icon = "message-square",
