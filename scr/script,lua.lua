@@ -2163,25 +2163,25 @@ end
 local roleParagraph = Status1:Paragraph({
     Title = "Role",
     Desc = "Loading...",
-	ImageSize = 80,
+	
 })
 
 local mapParagraph = Status1:Paragraph({
     Title = "Map",
     Desc = "Loading...",
-	ImageSize = 80,
+	
 })
 
 local murdererParagraph = Status2:Paragraph({
     Title = "Murderer",
     Desc = "Loading...",
-	ImageSize = 80,
+	
 })
 
 local sheriffParagraph = Status2:Paragraph({
     Title = "Sheriff / Hero",
     Desc = "Loading...",
-	ImageSize = 80,
+	
 })
 
 
