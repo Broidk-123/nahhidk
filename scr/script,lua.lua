@@ -2153,39 +2153,35 @@ local HttpService = game:GetService("HttpService")
 
 -- Helper para makuha yung avatar thumbnail
 local function getAvatarUrl(userId)
-    local thumbUrl = "https://www.roblox.com/bust-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
-    pcall(function()
-        local response = request({
-            Url = "https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. userId .. "&size=420x420&format=Png&isCircular=false",
-            Method = "GET",
-        })
-        local data = HttpService:JSONDecode(response.Body)
-        if data and data.data and data.data[1] then
-            thumbUrl = data.data[1].imageUrl
-        end
-    end)
-    return thumbUrl
+    return string.format(
+        "https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png",
+        userId
+    )
 end
 
 -- Paragraphs
 local roleParagraph = Status1:Paragraph({
     Title = "Role",
     Desc = "Loading...",
+	ImageSize = 80,
 })
 
 local mapParagraph = Status1:Paragraph({
     Title = "Map",
     Desc = "Loading...",
+	ImageSize = 80,
 })
 
 local murdererParagraph = Status2:Paragraph({
     Title = "Murderer",
     Desc = "Loading...",
+	ImageSize = 80,
 })
 
 local sheriffParagraph = Status2:Paragraph({
     Title = "Sheriff / Hero",
     Desc = "Loading...",
+	ImageSize = 80,
 })
 
 
@@ -2210,7 +2206,7 @@ local function updateStatus()
     -- Murderer
     if murderer then
         local murdererUrl = getAvatarUrl(murderer.UserId)
-        murdererParagraph:SetTitle("Murderer — " .. murderer.Name)
+        murdererParagraph:SetTitle("Murderer")
         murdererParagraph:SetDesc("@" .. murderer.Name)
         murdererParagraph:SetImage(murdererUrl)
     else
@@ -2221,7 +2217,7 @@ local function updateStatus()
     -- Sheriff
     if sheriff then
         local sheriffUrl = getAvatarUrl(sheriff.UserId)
-        sheriffParagraph:SetTitle("Sheriff/Hero — " .. sheriff.Name)
+        sheriffParagraph:SetTitle("Sheriff/Hero")
         sheriffParagraph:SetDesc("@" .. sheriff.Name)
         sheriffParagraph:SetImage(sheriffUrl)
     else
@@ -2231,8 +2227,8 @@ local function updateStatus()
 
     -- Map
     if map then
-        mapParagraph:SetTitle(map.Name)
-        mapParagraph:SetDesc("Current Map")
+        mapParagraph:SetTitle("Round Map)
+        mapParagraph:SetDesc(map.Name)
     else
         mapParagraph:SetTitle("Map")
         mapParagraph:SetDesc("Loading...")
