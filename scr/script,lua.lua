@@ -2341,6 +2341,107 @@ inno:Toggle({
 		autoGetDroppedGun = state
 	end
 })
+local hitboxx = mainstack1:Section({
+		Title = "Hitbox",
+		Icon = "box",
+		TextXAlignment = "Center",
+		Opened = true,
+		Box = true,
+		BoxBorder = true,
+	})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local HitboxSettings = {
+    Hitbox = {
+        Enabled = false,
+        Size = 5,
+        Color = Color3.new(0, 0, 1),
+        Adornments = {},
+        Connection = nil
+    }
+}
+
+local function UpdateHitboxes()
+    if HitboxSettings.Hitbox.Enabled then
+        for _, Player in pairs(Players:GetPlayers()) do
+            if Player ~= LocalPlayer then
+                local Character = Player.Character
+                local Adornment = HitboxSettings.Hitbox.Adornments[Player]
+                if Character and HitboxSettings.Hitbox.Enabled then
+                    local RootPart = Character:FindFirstChild("HumanoidRootPart")
+                    if RootPart then
+                        if Adornment then
+                            Adornment.Size = Vector3.new(HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size)
+                            Adornment.Color3 = HitboxSettings.Hitbox.Color
+                        else
+                            local NewAdornment = Instance.new("BoxHandleAdornment")
+                            NewAdornment.Adornee = RootPart
+                            NewAdornment.Size = Vector3.new(HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size, HitboxSettings.Hitbox.Size)
+                            NewAdornment.Color3 = HitboxSettings.Hitbox.Color
+                            NewAdornment.Transparency = 0.4
+                            NewAdornment.ZIndex = 10
+                            NewAdornment.Parent = RootPart
+                            HitboxSettings.Hitbox.Adornments[Player] = NewAdornment
+                        end
+                    end
+                elseif Adornment then
+                    Adornment:Destroy()
+                    HitboxSettings.Hitbox.Adornments[Player] = nil
+                end
+            end
+        end
+    end
+end
+
+hitboxx:Toggle({
+    Title = "Hitbox",
+    Desc = "Toggle hitbox on/off",
+    Callback = function(State)
+        HitboxSettings.Hitbox.Enabled = State
+        if State then
+            if not HitboxSettings.Hitbox.Connection then
+                HitboxSettings.Hitbox.Connection = RunService.Heartbeat:Connect(UpdateHitboxes)
+            end
+        else
+            if HitboxSettings.Hitbox.Connection then
+                HitboxSettings.Hitbox.Connection:Disconnect()
+                HitboxSettings.Hitbox.Connection = nil
+            end
+            for _, Adornment in pairs(HitboxSettings.Hitbox.Adornments) do
+                if Adornment then
+                    Adornment:Destroy()
+                end
+            end
+            HitboxSettings.Hitbox.Adornments = {}
+        end
+    end
+})
+
+hitboxx:Slider({
+    Title = "Hitbox Size",
+    Desc = "Set Hitbox Size",
+    Value = {
+        Min = 1,
+        Max = 15,
+        Default = 5
+    },
+    Callback = function(Value)
+        HitboxSettings.Hitbox.Size = Value
+    end
+})
+
+hitboxx:Colorpicker({
+    Title = "Hitbox color",
+    Desc = "Set Hitbox Color",
+    Default = Color3.new(0, 0, 1),
+    Callback = function(Color)
+        HitboxSettings.Hitbox.Color = Color
+    end
+})
+
 local sher = mainstack2:Section({
 		Title = "Sheriff",
 		Icon = "crosshair",
