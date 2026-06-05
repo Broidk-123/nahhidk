@@ -2679,24 +2679,31 @@ playerDefenseSection:Button({
 
 local utilityRolesSection = Tabs.Utility:Section({
 	Title = "Roles",
-	Opened = true
+	Icon = "",
+	Opened = true,
+	Box = true,
+	BoxBorder = true,
 })
 
-utilityRolesSection:Button({
+local rolestack = utilityRolesSection:HStack()
+local rolestack1 = rolestack:VStack()
+local rolestack2 = rolestack:VStack()
+
+rolestack1:Button({
 	Title = "Copy Sheriff Username",
 	Desc = "Copies the sheriff or hero username.",
 	Icon = "copy",
 	Callback = copySheriffUsername
 })
 
-utilityRolesSection:Button({
+rolestack1:Button({
 	Title = "Copy Murderer Username",
 	Desc = "Copies the murderer username.",
 	Icon = "copy",
 	Callback = copyMurdererUsername
 })
 
-utilityRolesSection:Button({
+rolestack2:Button({
 	Title = "Expose Roles",
 	Desc = "Sends murderer and sheriff name to chat.",
 	Icon = "message-circle",
@@ -2705,7 +2712,10 @@ utilityRolesSection:Button({
 
 local utilityFlingSection = Tabs.Utility:Section({
 	Title = "Fling",
-	Opened = true
+	Icon = "person-standing",
+	Opened = true,
+	Box = true,
+	BoxBorder = true,
 })
 
 utilityFlingSection:Button({
