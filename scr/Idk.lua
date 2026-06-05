@@ -249,6 +249,21 @@ local Window = WindUI:CreateWindow({
 	MinSize = Vector2.new(580, 400),
 	MaxSize = Vector2.new(1050, 725),
 
+		OpenButton = {
+		Title = "Open UI", -- can be changed
+		CornerRadius = UDim.new(1, 0), -- fully rounded
+		StrokeThickness = 3, -- removing outline
+		Enabled = true, -- enable or disable openbutton
+		Draggable = true,
+		OnlyMobile = false,
+		Scale = 0.5,
+
+		Color = ColorSequence.new( -- gradient
+			Color3.fromHex("#0F172A"), -- Dark navy
+			Color3.fromHex("#38BDF8")  -- Sky blue
+		),
+	},
+
 		User = {
 			Enabled = true,
         
