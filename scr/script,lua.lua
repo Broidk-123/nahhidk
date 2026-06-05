@@ -2175,25 +2175,14 @@ local murdererParagraph = Status2:Paragraph({
     Title = "Murderer",
     Desc = "Loading...",
 	ImageSize = 80,
-	Color = WindUI:Gradient({                                                      
-    ["0"] = { Color = Color3.fromHex("#f50c0c"), Transparency = 0 },            
-    ["100"]   = { Color = Color3.fromHex("#540202"), Transparency = 0 },      
-}, {                                                                            
-    Rotation = 0,                                                               
-})
-
+	Color = Color3.fromHex("#781313")
 })
 
 local sheriffParagraph = Status2:Paragraph({
     Title = "Sheriff / Hero",
     Desc = "Loading...",
 	ImageSize = 80,
-	Color = WindUI:Gradient({                                                      
-    ["0"] = { Color = Color3.fromHex("#21739c"), Transparency = 0 },            
-    ["100"]   = { Color = Color3.fromHex("#35cefc"), Transparency = 0 },      
-}, {                                                                            
-    Rotation = 0,                                                               
-}), 
+	Color = Color3.fromHex("#176287")
 	
 })
 
