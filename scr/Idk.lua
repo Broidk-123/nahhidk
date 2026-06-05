@@ -255,8 +255,6 @@ local Window = WindUI:CreateWindow({
 		StrokeThickness = 3, -- removing outline
 		Enabled = true, -- enable or disable openbutton
 		Draggable = true,
-		OnlyMobile = false,
-		Scale = 0.5,
 
 		Color = ColorSequence.new( -- gradient
 			Color3.fromHex("#0F172A"), -- Dark navy
