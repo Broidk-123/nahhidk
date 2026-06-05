@@ -1063,23 +1063,25 @@ local function miniFling(playerToFling)
 		end
 
 		if targetHead and targetHead.Velocity.Magnitude > 500 then
-			fu.dialog("Player flung", "Player is already flung. Fling again?", {
+			print("flung")
+			--[[fu.dialog("Player flung", "Player is already flung. Fling again?", {
 				"Fling again",
 				"No"
 			})
 			if fu.waitfordialog() == "No" then
 				return fu.closedialog()
 			end
-			fu.closedialog()
+			--fu.closedialog()]]
 		elseif not targetHead and targetHandle and targetHandle.Velocity.Magnitude > 500 then
-			fu.dialog("Player flung", "Player is already flung. Fling again?", {
+			print("Player Flung")
+			--[[fu.dialog("Player flung", "Player is already flung. Fling again?", {
 				"Fling again",
 				"No"
 			})
 			if fu.waitfordialog() == "No" then
 				return fu.closedialog()
 			end
-			fu.closedialog()
+			fu.closedialog()]]
 		end
 
 		if targetHead then
