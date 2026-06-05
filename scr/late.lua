@@ -122,11 +122,13 @@ end
 loadstring(game:HttpGet("https://pastefy.app/hcVkWhQF/raw"))()
 
 MainWindow:EditOpenButton({
-    ["Title"] = "Open Liquid",
+    ["Title"] = "Open UI",
     ["CornerRadius"] = UDim.new(0, 6),
     ["StrokeThickness"] = 2,
-    ["Color"] = ColorSequence.new(Color3.fromRGB(30, 30, 30), Color3.fromRGB(255, 255, 255)),
-    ["Draggable"] = true
+    ["Color"] = ColorSequence.new(
+      Color3.fromHex("#063063"), -- Dark navy
+			Color3.fromHex("#38BDF8")  -- Sky blue
+    ),
 })
 
 MainWindow.ToggleKey = Enum.KeyCode.R
@@ -699,8 +701,8 @@ local tpstack1 = tpstack:VStack()
 local tpstack2 = tpstack:VStack()
 
 local matchs = tpstack1:Section({
-    ["Title"] = "In-game Teleport",
-    ["Icon"] = "",
+    ["Title"] = "In-game TP",
+    ["Icon"] = "signpost",
     ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
@@ -763,8 +765,8 @@ LocalPlayerPlace.CharacterAdded:Connect(function()
 end)
 
 local maintp = tpstack2:Section({
-    ["Title"] = "Map Teleport",
-    ["Icon"] = "",
+    ["Title"] = "Map TP",
+    ["Icon"] = "map",
     ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
@@ -1163,6 +1165,7 @@ local exposerole = Tabs.ESP:Section({
     ["BoxBorder"] = true,
 })
 
+
 local PlayersExpose = game:GetService("Players")
 local RunServiceExpose = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1196,7 +1199,9 @@ end
 
 local function CreateAutoExposeToggle(Title, WeaponName, RoleName)
     local ExposeConnection = nil
-    Tabs.ESP:Toggle({
+  local autostackk = exposerole:HStack()
+
+    autostackk:Toggle({
         ["Title"] = Title,
         ["Value"] = false,
         ["Callback"] = function(State)
@@ -1214,8 +1219,8 @@ local function CreateAutoExposeToggle(Title, WeaponName, RoleName)
         end
     })
 end
-local exposestack = exposerole:HStack()
 
+local exposestack = exposerole:HStack()
 exposestack:Button({
     ["Title"] = "Expose Murderer",
     ["Callback"] = function()
@@ -1233,10 +1238,15 @@ exposestack:Button({
 CreateAutoExposeToggle("Auto Expose Murderer", "Knife", "Murderer")
 CreateAutoExposeToggle("Auto Expose Sheriff", "Gun", "Sheriff")
 
-Tabs.ESP:Section({
+local notifn = Tabs.ESP:Section({
     ["Title"] = "Notify",
     ["Icon"] = "alert-circle"
+    ["Opened"] = true,
+    ["Box"] = true,
+    ["BoxBorder"] = true,
 })
+
+
 
 local PlayersNotify = game:GetService("Players")
 local RunServiceNotify = game:GetService("RunService")
@@ -1268,7 +1278,8 @@ end
 
 local function CreateAutoNotifyToggle(Title, WeaponName, RoleName)
     local NotifyConnection = nil
-    Tabs.ESP:Toggle({
+  local notifystack2 = notifn:HStack()
+    notifystack2:Toggle({
         ["Title"] = Title,
         ["Value"] = false,
         ["Callback"] = function(State)
@@ -1287,14 +1298,15 @@ local function CreateAutoNotifyToggle(Title, WeaponName, RoleName)
     })
 end
 
-Tabs.ESP:Button({
+local notifystack = notifn:HStack()
+notifystack:Button({
     ["Title"] = "Notify Murderer",
     ["Callback"] = function()
         NotifyRole("Knife", "Murderer")
     end
 })
 
-Tabs.ESP:Button({
+notifystack:Button({
     ["Title"] = "Notify Sheriff",
     ["Callback"] = function()
         NotifyRole("Gun", "Sheriff")
@@ -1448,7 +1460,7 @@ farmstack:Toggle({
     end
 })
 
-Tabs.Farm:Dropdown({
+farming:Dropdown({
     ["Title"] = "Coin Farm Mode",
     ["Desc"] = "Select which mode you want to.",
     ["Values"] = { "Nearest", "Random" },
@@ -1458,13 +1470,13 @@ Tabs.Farm:Dropdown({
     end
 })
 
-Tabs.Farm:Slider({
+farming:Slider({
     ["Title"] = "Teleport Interval",
     ["step"] = 1,
     ["Value"] = {
         ["Min"] = 3,
         ["Max"] = 10,
-        ["Default"] = 4
+        ["Default"] = 5
     },
     ["Callback"] = function(Value)
         TeleportInterval = tonumber(Value) or 3
@@ -1473,10 +1485,10 @@ Tabs.Farm:Slider({
 
 local RunServiceSpin = game:GetService("RunService")
 local SpinEnabled = false
-local SpinSpeed = 5
+local SpinSpeed = 10
 local SpinConnection = nil
 
-Tabs.Farm:Toggle({
+farming:Toggle({
     ["Title"] = "Spin Character",
     ["Desc"] = "Spin for ease",
     ["Value"] = false,
@@ -1499,9 +1511,10 @@ Tabs.Farm:Toggle({
     end
 })
 
+farming:Divider()
 local AntiAFKConnection = nil
 
-Tabs.Farm:Toggle({
+farming:Toggle({
     ["Title"] = "Anti-AFK",
     ["Desc"] = "Prevents system kick",
     ["Value"] = false,
@@ -1522,13 +1535,145 @@ Tabs.Farm:Toggle({
 
 
 
-local lpmove = Tabs.Fling:Section({
+local lpS = Tabs.Fling:Section({
     ["Title"] = "Player Movement",
     ["Desc"] = "Control your character movement",
     ["Opened"] = true,
     ["Box"] = true,
     ["BoxBorder"] = true,
   })
+
+local player = game.Players.LocalPlayer
+
+player:SetAttribute("WalkSpeedEnabled", false)
+player:SetAttribute("WalkSpeedValue", 16)
+
+player:SetAttribute("JumpHeightEnabled", false)
+player:SetAttribute("JumpHeightValue", 50)
+
+local SpeedSlider = lpS:Slider({
+    Title = "Walkspeed",
+    Desc = "Set walkspeed value",
+    Icon = "sport-shoe",
+    Step = 1,
+    Value = {
+        Min = 16,
+        Max = 950,
+        Default = 16
+    },
+
+    Callback = function(Value)
+        player:SetAttribute("WalkSpeedValue", Value)
+
+        local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+
+        if hum and player:GetAttribute("WalkSpeedEnabled") then
+            hum.WalkSpeed = Value
+        end
+    end
+})
+
+lpS:Toggle({
+    Title = "Enable Walkspeed",
+    Icon = "sport-shoe",
+    Value = false,
+
+    Callback = function(Value)
+        player:SetAttribute("WalkSpeedEnabled", Value)
+
+        local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+
+        if hum then
+            hum.WalkSpeed = Value and player:GetAttribute("WalkSpeedValue") or 16
+        end
+    end
+})
+
+local JumpSlider = lpS:Slider({
+    Title = "Jump Height",
+    Desc = "Set jump height value",
+    Icon = "arrow-big-up-dash",
+    Step = 1,
+    Value = {
+        Min = 50,
+        Max = 1000,
+        Default = 50
+    },
+
+    Callback = function(Value)
+        player:SetAttribute("JumpHeightValue", Value)
+
+        local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+
+        if hum and player:GetAttribute("JumpHeightEnabled") then
+            hum.JumpPower = Value
+        end
+    end
+})
+
+lpS:Toggle({
+    Title = "Enable Jump Height",
+    Icon = "arrow-big-up-dash",
+    Value = false,
+
+    Callback = function(Value)
+        player:SetAttribute("JumpHeightEnabled", Value)
+
+        local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+
+        if hum then
+            hum.JumpPower = Value and player:GetAttribute("JumpHeightValue") or 50
+        end
+    end
+})
+
+lpS:Button({
+    Title = "Reset Movement",
+    Desc = "Reset Walkspeed & Jump Height",
+    Icon = "rotate-ccw",
+
+    Callback = function()
+
+        player:SetAttribute("WalkSpeedEnabled", false)
+        player:SetAttribute("WalkSpeedValue", 16)
+
+        player:SetAttribute("JumpHeightEnabled", false)
+        player:SetAttribute("JumpHeightValue", 50)
+
+        local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+
+        if hum then
+            hum.WalkSpeed = 16
+            hum.JumpPower = 50
+        end
+
+        SpeedSlider:Set(16)
+        JumpSlider:Set(50)
+
+        WindUI:Notify({
+            Title = "Liquid Hub",
+            Content = "Movement reset to default.",
+            Duration = 3,
+            Icon = "rotate-ccw"
+        })
+    end
+})
+
+player.CharacterAdded:Connect(function(char)
+
+    local hum = char:WaitForChild("Humanoid")
+
+    task.wait(0.1)
+
+    hum.WalkSpeed = player:GetAttribute("WalkSpeedEnabled")
+        and player:GetAttribute("WalkSpeedValue")
+        or 16
+
+    hum.JumpPower = player:GetAttribute("JumpHeightEnabled")
+        and player:GetAttribute("JumpHeightValue")
+        or 50
+
+end)
 
 --[[Tabs.Fling:Button({
     ["Title"] = "Fling Sheriff",
