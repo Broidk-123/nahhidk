@@ -2117,7 +2117,7 @@ local userParagraph = infostack:Paragraph({
 
 local placeId = game.PlaceId
 local gameName = "Murder Mystery 2"
-local creatorName = "Unknown"
+local creatorName = "Nikilis"
 
 pcall(function()
     local info = MarketplaceService:GetProductInfo(placeId)
@@ -2144,7 +2144,7 @@ local gameParagraph = infostack:Paragraph({
 })
 
 Tabs.Info:Divider()
-Tabs.Info:Section({ Title = "STATUS" })
+Tabs.Info:Section({ Title = "STATUS", TextXAlignment = "Center" })
 Tabs.Info:Divider()
 local statusstack = Tabs.Info:HStack()
 local Status1 = statusstack:VStack()
@@ -2620,7 +2620,7 @@ timerSection:Toggle({
 
 local tpstack = Tabs.Player:HStack()
 local tpstack1 = tpstack:VStack()
-local tpsack2 = tpstack:VStack()
+local tpstack2 = tpstack:VStack()
 
 local matchs = tpstack1:Section({
 	Title = "Game TP",
