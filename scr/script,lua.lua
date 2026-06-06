@@ -2077,6 +2077,11 @@ local Tabs = {
 		Icon = "user",
 		ShowTabTitle = true,
 	}),
+	Farm = Window:Tab({
+		Title = "Farming",
+		Icon = "wrench",
+		ShowTabTitle = true,
+	}),
 	Utility = Window:Tab({
 		Title = "Utility",
 		Icon = "wrench",
@@ -2869,6 +2874,282 @@ utilityFlingSection:Button({
 	Icon = "move-3d",
 	Callback = flingMurderer
 })
+
+
+
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local Char = LP.Character or LP.CharacterAdded:Wait()
+local HRP = Char:WaitForChild("HumanoidRootPart")
+local Humanoid = Char:WaitForChild("Humanoid")
+
+
+local farmEnabled      = false
+local tweenSpeed       = 25          -- studs/sec
+local farmPriority     = "Nearest"   -- "Nearest" | "Random" | "Oldest"
+local safetyEnabled    = false
+local murdererDist     = 30
+local coinCount        = 0
+local farmPaused       = false       -- internal pause flag for safety
+
+
+
+-- finds the current map with a CoinContainer
+local function FindActiveMap()
+    while true do
+        for _, obj in ipairs(workspace:GetChildren()) do
+            if obj:GetAttribute("MapID") and obj:FindFirstChild("CoinContainer") then
+                return obj
+            end
+        end
+        task.wait()
+    end
+end
+
+-- returns the best coin based on current farmPriority
+local function FindTargetCoin()
+    local map = FindActiveMap()
+    if not map then return nil end
+
+    local coins = {}
+    for _, coin in ipairs(map.CoinContainer:GetChildren()) do
+        local visual = coin:FindFirstChild("CoinVisual")
+        if visual and not visual:GetAttribute("Collected") then
+            table.insert(coins, coin)
+        end
+    end
+
+    if #coins == 0 then return nil end
+
+    if farmPriority == "Nearest" then
+        local closest, bestDist = nil, math.huge
+        for _, coin in ipairs(coins) do
+            local d = (HRP.Position - coin.Position).Magnitude
+            if d < bestDist then
+                closest  = coin
+                bestDist = d
+            end
+        end
+        return closest
+
+    elseif farmPriority == "Random" then
+        return coins[math.random(1, #coins)]
+
+    elseif farmPriority == "Oldest" then
+        -- first child = oldest in the container
+        return coins[1]
+    end
+
+    return coins[1]
+end
+
+-- smooth tween teleport toward a coin
+local function TweenToCoin(targetCoin)
+    Humanoid:ChangeState(11)
+    local dist    = (HRP.Position - targetCoin.Position).Magnitude
+    local duration = dist / tweenSpeed
+    local tween   = TweenService:Create(
+        HRP,
+        TweenInfo.new(duration, Enum.EasingStyle.Linear),
+        { CFrame = targetCoin.CFrame }
+    )
+    tween:Play()
+    tween.Completed:Wait()
+end
+
+
+local function FindNearestMurderer()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LP and player.Character then
+            local murdererHRP = player.Character:FindFirstChild("HumanoidRootPart")
+            local tool        = player.Character:FindFirstChildWhichIsA("Tool")
+            -- crude check: player holding a tool = possible murderer
+            if murdererHRP and tool then
+                local dist = (HRP.Position - murdererHRP.Position).Magnitude
+                if dist <= murdererDist then
+                    return player, dist
+                end
+            end
+        end
+    end
+    return nil, math.huge
+end
+
+
+local TabStats = Tabs.Farm:HStack()
+
+local ParaCoins   = TabStats:Paragraph({ Title = "💰 Coins Collected", Desc = "0"        })
+local ParaTarget  = TabStats:Paragraph({ Title = "🎯 Current Target",  Desc = "None"     })
+local ParaStatus  = TabStats:Paragraph({ Title = "📡 Round Status",    Desc = "Idle"     })
+
+local function UpdateStats(target, status)
+    ParaCoins:SetDesc(tostring(coinCount))
+    ParaTarget:SetDesc(target  or "None")
+    ParaStatus:SetDesc(status  or "Idle")
+end
+
+-- ══════════════════════════════════════════
+--  AUTO FARM TAB  –  UI Elements
+-- ══════════════════════════════════════════
+local TabFarm = Tabs.Farm:Section({ 
+		Title = "Auto Farm",
+		Desc = "Auto farm coins",
+		Opened = true, 
+		Box = true,
+		BoxBorder = true,
+	})
+
+TabFarm:Toggle({
+    Title    = "Auto Farm Coins",
+    Icon     = "coins",
+    Desc     = "Automatically collect coins on the map",
+    Value    = false,
+	Flag = "autofarmcoin",
+    Callback = function(state)
+        farmEnabled = state
+        if state then
+            notify("Auto Coin Farm enabled!", nil, "coins")
+            UpdateStats(nil, "Farming...")
+        else
+            notify("Auto Coin Farm disabled.", nil, "circle-x")
+            UpdateStats(nil, "Idle")
+        end
+    end,
+})
+
+TabFarm:Slider({
+    Title = "Tween Speed",
+    Desc  = "How fast the character moves to coins (studs/sec). Keep low to avoid kick.",
+    Icon  = "zap",
+	Flag = "cointweenspeed",
+    Value = {
+        Min     = 10,
+        Max     = 60,   -- capped low on purpose
+        Default = 25,
+    },
+    Step     = 5,
+    Callback = function(value)
+        tweenSpeed = value
+    end,
+})
+
+TabFarm:Dropdown({
+    Title  = "Farm Priority",
+    Desc   = "Choose which coins to target first",
+    Icon   = "list-filter",
+    Values = { "Nearest", "Random", "Oldest" },
+    Value  = "Nearest",
+    Callback = function(selected)
+        farmPriority = selected
+        notify("Farm Priority set to: " .. selected, nil, "list-filter")
+    end,
+})
+
+-- ══════════════════════════════════════════
+--  SAFETY TAB  –  UI Elements
+-- ══════════════════════════════════════════
+local TabSafety = Tabs.Farm:Section({ 
+		Title = "Safety",
+		Desc = "prevent malfunction",
+		Icon = "shield",
+		Opened = true,
+		Box = true,
+		BoxBorder = true,
+	})
+
+TabSafety:Toggle({
+    Title    = "Auto Stop Near Murderer",
+    Icon     = "shield-alert",
+    Desc     = "Pauses farm when a murderer is nearby. Resumes when they move away.",
+    Value    = false,
+    Callback = function(state)
+        safetyEnabled = state
+        if state then
+            notify("Safety enabled. Farm will pause near murderers.", nil, "shield-alert")
+        else
+            notify("Safety disabled.", nil, "shield-off")
+            farmPaused = false
+        end
+    end,
+})
+
+TabSafety:Slider({
+    Title = "Murderer Distance",
+    Desc  = "How close (studs) before farm pauses",
+    Icon  = "move",
+    Value = {
+        Min     = 10,
+        Max     = 100,
+        Default = 30,
+    },
+    Step     = 5,
+    Callback = function(value)
+        murdererDist = value
+    end,
+})
+
+-- ══════════════════════════════════════════
+--  SAFETY WATCHER  (runs in background)
+-- ══════════════════════════════════════════
+task.spawn(function()
+    while true do
+        task.wait(0.5)
+        if safetyEnabled and farmEnabled then
+            local murderer, dist = FindNearestMurderer()
+            if murderer and not farmPaused then
+                farmPaused = true
+                notify("Murderer nearby! Pausing farm... (" .. math.floor(dist) .. " studs)", nil, "shield-alert")
+                UpdateStats(nil, "⚠️ PAUSED – Murderer nearby")
+            elseif not murderer and farmPaused then
+                farmPaused = false
+                notify("Murderer is gone. Resuming farm!", nil, "check-circle")
+                UpdateStats(nil, "Farming...")
+            end
+        end
+    end
+end)
+
+-- ══════════════════════════════════════════
+--  MAIN FARM LOOP
+-- ══════════════════════════════════════════
+task.spawn(function()
+    while task.wait() do
+        if not farmEnabled or farmPaused then
+            task.wait(0.2)
+            continue
+        end
+
+        local target = FindTargetCoin()
+        if not target then
+            UpdateStats("None", "Waiting for coins...")
+            task.wait(1)
+            continue
+        end
+
+        UpdateStats(target.Name, "Farming...")
+        TweenToCoin(target)
+
+        -- wait for the coin to register as collected or disappear
+        local visual = target:FindFirstChild("CoinVisual")
+        local waited = 0
+        while visual and not visual:GetAttribute("Collected") and visual.Parent and waited < 3 do
+            task.wait(0.05)
+            waited += 0.05
+            -- bail early if a closer coin shows up (priority changed)
+            if farmPriority == "Nearest" then
+                local newer = FindTargetCoin()
+                if newer and newer ~= target then break end
+            end
+        end
+
+        -- coin picked up
+        if not target.Parent or (visual and visual:GetAttribute("Collected")) then
+            coinCount += 1
+            UpdateStats("None", "Farming...")
+        end
+    end
+end)
 
 local settingsUiSection = Tabs.Settings:Section({
 	Title = "UI Toggle Keybind",
