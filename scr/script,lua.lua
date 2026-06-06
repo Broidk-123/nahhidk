@@ -2254,7 +2254,7 @@ local mrd = mainstack1:Section({
 		Title = "Murderer",
 		Icon = "sword",
 		TextXAlignment = "Center",
-		Opened = false,
+		Opened = true,
 		Box = true,
 		BoxBorder = true,
 	})
@@ -2534,6 +2534,8 @@ sher:Toggle({
 	Desc = "Uses ai prediction.",
 	Icon = "brain",
 	Value = false,
+	Locked = true,
+	LockedTitle = "admin only",
 	Flag = "UseAIPredictionEngine",
 	Callback = function(state)
 		predictionAIEngine = state
