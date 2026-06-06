@@ -837,7 +837,7 @@ task.spawn(function()
         local currentPlayers = #Players:GetPlayers()
         local maxPlayers = Players.MaxPlayers
 
-        local serverType = game.PrivateServerId ~= "" and "Private" or "Public"
+        local serverType = "Unknown"
 
         local descText = string.format(
             "Players: %d/%d\nServer Type: %s\nJob ID: %s",
