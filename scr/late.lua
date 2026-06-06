@@ -119,13 +119,7 @@ end
 
 local roleName = getRole()
 
-Window:Tag({
-    Title = roleName,
-    Icon = RoleIcons[roleName],
-    Color = RoleColors[roleName],
-	Border = true,
-    Radius = 6
-})
+
 
 WindUI:AddTheme({
     ["Name"] = "Dark",
@@ -252,7 +246,13 @@ MainWindow:EditOpenButton({
 
 MainWindow.ToggleKey = Enum.KeyCode.R
 
-
+MainWindow:Tag({
+    Title = roleName,
+    Icon = RoleIcons[roleName],
+    Color = RoleColors[roleName],
+	Border = true,
+    Radius = 6
+})
 
 ----FUNC
 
