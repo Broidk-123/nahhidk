@@ -42,6 +42,91 @@ end
 
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
+
+local Roles = {
+    Owner = {
+        "eddiejr031"
+    },
+
+    Admin = {
+        "JumpyFrog80",
+        "alvicc12"
+    },
+
+    Beta = {
+        ""
+    },
+
+    Free = {}
+}
+
+local function hasRole(roleName)
+    local roleList = Roles[roleName]
+    if not roleList then
+        return false
+    end
+
+    for _, name in ipairs(roleList) do
+        if name == player.Name then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- Permissions
+local canUse = hasRole("Admin") or hasRole("Owner")
+
+local isOwner = hasRole("Owner")
+local isAdmin = hasRole("Admin")
+local isBeta = hasRole("Beta")
+
+-- Premium from Junkie
+local isPremium = getgenv().Access == "Premium"
+
+-- Colors
+local RoleColors = {
+    Owner = Color3.fromHex("#0072FF"),
+    Admin = Color3.fromHex("#FF8C00"),
+    Beta = Color3.fromHex("#A855F7"),
+    Premium = Color3.fromHex("#00D4FF"),
+    Free = Color3.fromHex("#30FF6A")
+}
+
+-- Icons
+local RoleIcons = {
+    Owner = "crown",
+    Admin = "shield",
+    Beta = "flask",
+    Premium = "gem",
+    Free = "user"
+}
+
+local function getRole()
+    if isOwner then
+        return "Owner"
+    elseif isAdmin then
+        return "Admin"
+    elseif isBeta then
+        return "Beta"
+    elseif isPremium then
+        return "Premium"
+    else
+        return "Free"
+    end
+end
+
+local roleName = getRole()
+
+Window:Tag({
+    Title = roleName,
+    Icon = RoleIcons[roleName],
+    Color = RoleColors[roleName],
+	Border = true,
+    Radius = 6
+})
+
 WindUI:AddTheme({
     ["Name"] = "Dark",
     ["Accent"] = "#18181b",
