@@ -2629,7 +2629,9 @@ timerSection:Toggle({
 
 local playerMovementSection = Tabs.Player:Section({
 	Title = "Movement",
-	Opened = true
+	Opened = true,
+	Box = true, 
+	BoxBorder = true,
 })
 
 playerMovementSection:Button({
@@ -2655,10 +2657,75 @@ playerMovementSection:Button({
 
 local playerDefenseSection = Tabs.Player:Section({
 	Title = "Defense",
-	Opened = true
+	Opened = true,
+	Box = true,
+	BoxBorder = true,
 })
 
+local AntiFlingEnabled = false
+local AntiFlingConnections = {}
 
+local function DisablePlayerCollision(Player)
+    if AntiFlingEnabled and Player.Character then
+        for _, Descendant in pairs(Player.Character:GetDescendants()) do
+            if Descendant:IsA("BasePart") and Descendant.CanCollide then
+                Descendant.CanCollide = false
+            end
+        end
+    end
+end
+
+local function EnableAllPlayerCollisions()
+    for _, Player in pairs(game.Players:GetPlayers()) do
+        if Player ~= game.Players.LocalPlayer and Player.Character then
+            for _, Descendant in pairs(Player.Character:GetDescendants()) do
+                if Descendant:IsA("BasePart") then
+                    Descendant.CanCollide = true
+                end
+            end
+        end
+    end
+end
+
+local function StartAntiFling()
+    for _, Player in pairs(game.Players:GetPlayers()) do
+        if Player ~= game.Players.LocalPlayer then
+            local Connection = game:GetService("RunService").Stepped:Connect(function()
+                DisablePlayerCollision(Player)
+            end)
+            table.insert(AntiFlingConnections, Connection)
+        end
+    end
+    game.Players.PlayerAdded:Connect(function(Player)
+        if Player ~= game.Players.LocalPlayer then
+            local Connection = game:GetService("RunService").Stepped:Connect(function()
+                DisablePlayerCollision(Player)
+            end)
+            table.insert(AntiFlingConnections, Connection)
+        end
+    end)
+end
+
+local function StopAntiFling()
+    for _, Connection in pairs(AntiFlingConnections) do
+        Connection:Disconnect()
+    end
+    table.clear(AntiFlingConnections)
+    EnableAllPlayerCollisions()
+end
+
+playerDefenseSection:Toggle({
+    Title = "Anti Fling",
+    Value = false,
+    Callback = function(State)
+        AntiFlingEnabled = State
+        if State then
+            StartAntiFling()
+        else
+            StopAntiFling()
+        end
+    end
+})
 
 playerDefenseSection:Toggle({
 	Title = "Ignore Knife Throws",
