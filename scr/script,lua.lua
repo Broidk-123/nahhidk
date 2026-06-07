@@ -2875,7 +2875,8 @@ utilityFlingSection:Button({
 	Callback = flingMurderer
 })
 
-                
+
+
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
@@ -2886,14 +2887,16 @@ local Humanoid = Char:WaitForChild("Humanoid")
 -- ══════════════════════════════════════════
 --  STATE
 -- ══════════════════════════════════════════
-local farmEnabled   = false
-local tweenSpeed    = 25
-local farmPriority  = "Nearest"
-local safetyEnabled = false
-local murdererDist  = 30
-local coinCount     = 0
-local farmPaused    = false
-local activeTween   = nil
+local farmEnabled    = false  -- actual farm loop gate
+local farmToggleOn   = false  -- what the USER wants (toggle state)
+local tweenSpeed     = 25
+local farmPriority   = "Nearest"
+local safetyEnabled  = false
+local murdererDist   = 30
+local coinCount      = 0
+local farmPaused     = false
+local activeTween    = nil
+local lastCoinCount  = 0  -- for polling diff
 
 -- ══════════════════════════════════════════
 --  MAP / ROUND HELPERS
@@ -2945,6 +2948,20 @@ local function FindTargetCoin()
     end
 
     return coins[1]
+end
+
+-- counts how many coins in container are already collected
+local function CountCollectedCoins()
+    local map = GetActiveMap()
+    if not map then return 0 end
+    local count = 0
+    for _, coin in ipairs(map.CoinContainer:GetChildren()) do
+        local visual = coin:FindFirstChild("CoinVisual")
+        if visual and visual:GetAttribute("Collected") == true then
+            count += 1
+        end
+    end
+    return count
 end
 
 -- ══════════════════════════════════════════
@@ -3024,18 +3041,24 @@ FarmSection:Toggle({
     Value    = false,
     Flag     = "autofarmcoin",
     Callback = function(state)
-        if state and not IsInRound() then
-            notify("You're not in a round! Join one first.", nil, "x")
-            WindUI.Flags["autofarmcoin"]:Set(false)
-            return
-        end
+        farmToggleOn = state
 
-        farmEnabled = state
         if state then
-            coinCount = 0
-            UpdateStats(nil, "Farming...")
-            notify("Auto Coin Farm enabled!", nil, "coins")
+            if not IsInRound() then
+                -- toggle is ON but no round yet, just wait
+                farmEnabled = false
+                coinCount   = 0
+                UpdateStats(nil, "Waiting for round...")
+                notify("Waiting for a round to start...", nil, "info")
+            else
+                farmEnabled = true
+                coinCount   = 0
+                lastCoinCount = CountCollectedCoins()
+                UpdateStats(nil, "Farming...")
+                notify("Auto Coin Farm enabled!", nil, "coins")
+            end
         else
+            farmEnabled = false
             if activeTween then
                 activeTween:Cancel()
                 activeTween = nil
@@ -3136,8 +3159,6 @@ end)
 
 -- ══════════════════════════════════════════
 --  ROUND WATCHER
---  - Stops farm when round ends
---  - Auto-resumes if toggle is still ON when new round starts
 -- ══════════════════════════════════════════
 task.spawn(function()
     local wasInRound = false
@@ -3151,24 +3172,28 @@ task.spawn(function()
                 activeTween:Cancel()
                 activeTween = nil
             end
-            farmPaused = false
-            -- pause the farm internally but keep the toggle ON
-            -- so next round it auto-resumes
-            farmEnabled = false
-            coinCount   = 0
-            UpdateStats(nil, "Waiting for round...")
-            if WindUI.Flags["autofarmcoin"].Value then
+            farmEnabled   = false
+            farmPaused    = false
+            coinCount     = 0
+            lastCoinCount = 0
+
+            if farmToggleOn then
+                -- user still wants it on, just waiting for next round
+                UpdateStats(nil, "Waiting for round...")
                 notify("Round ended. Waiting for next round...", nil, "info")
+            else
+                UpdateStats(nil, "Idle")
             end
         end
 
-        -- new round just started and toggle is still ON
+        -- new round just started
         if not wasInRound and inRound then
-            if WindUI.Flags["autofarmcoin"].Value then
-                farmEnabled = true
-                coinCount   = 0
+            if farmToggleOn then
+                farmEnabled   = true
+                coinCount     = 0
+                lastCoinCount = CountCollectedCoins()
                 UpdateStats(nil, "Farming...")
-                notify("New round! Auto Farm resumed.", nil, "coins")
+                notify("New round! Auto Farm started.", nil, "coins")
             end
         end
 
@@ -3177,71 +3202,26 @@ task.spawn(function()
 end)
 
 -- ══════════════════════════════════════════
---  COIN COUNTER
---  MM2 marks coins via Collected attribute on
---  CoinVisual, not by removing from container.
---  So we watch GetAttributeChangedSignal.
+--  COIN COUNTER — polling based, most reliable
+--  Every 0.3s, count collected coins in container
+--  and diff against last known count.
 -- ══════════════════════════════════════════
-local coinListeners = {}
+task.spawn(function()
+    while true do
+        task.wait(0.3)
+        if not farmEnabled then continue end
 
-local function ClearCoinListeners()
-    for _, conn in ipairs(coinListeners) do
-        conn:Disconnect()
-    end
-    table.clear(coinListeners)
-end
+        local current = CountCollectedCoins()
+        if current > lastCoinCount then
+            coinCount     += (current - lastCoinCount)
+            lastCoinCount  = current
+            ParaCoins:SetDesc(tostring(coinCount))
+        end
 
-local function AttachCoinListeners(map)
-    ClearCoinListeners()
-
-    local container = map:FindFirstChild("CoinContainer")
-    if not container then return end
-
-    -- attach to all existing coins
-    local function WatchCoin(coin)
-        local visual = coin:FindFirstChild("CoinVisual")
-        if not visual then return end
-
-        local conn = visual:GetAttributeChangedSignal("Collected"):Connect(function()
-            if not farmEnabled then return end
-            if visual:GetAttribute("Collected") == true then
-                coinCount += 1
-                ParaCoins:SetDesc(tostring(coinCount))
-            end
-        end)
-        table.insert(coinListeners, conn)
-    end
-
-    for _, coin in ipairs(container:GetChildren()) do
-        WatchCoin(coin)
-    end
-
-    -- also watch coins that spawn in later mid-round
-    local addedConn = container.ChildAdded:Connect(function(coin)
-        task.wait(0.1) -- let CoinVisual load
-        WatchCoin(coin)
-    end)
-    table.insert(coinListeners, addedConn)
-end
-
--- attach when a new map appears
-workspace.ChildAdded:Connect(function(obj)
-    task.wait(0.5)
-    if obj:GetAttribute("MapID") and obj:FindFirstChild("CoinContainer") then
-        AttachCoinListeners(obj)
-    end
-end)
-
--- attach immediately if already in a round
-local existingMap = GetActiveMap()
-if existingMap then
-    AttachCoinListeners(existingMap)
-end
-
--- clean up when map is removed
-workspace.ChildRemoved:Connect(function(obj)
-    if obj:GetAttribute("MapID") then
-        ClearCoinListeners()
+        -- reset baseline when map resets mid-round (coins respawn)
+        if current < lastCoinCount then
+            lastCoinCount = current
+        end
     end
 end)
 
@@ -3267,7 +3247,7 @@ task.spawn(function()
         UpdateStats(target.Name, "Farming...")
         TweenToCoin(target)
     end
-end)      
+end)
                         
 
 local settingsUiSection = Tabs.Settings:Section({
