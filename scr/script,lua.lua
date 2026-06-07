@@ -2876,7 +2876,6 @@ utilityFlingSection:Button({
 })
 
 
-
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
@@ -2887,21 +2886,22 @@ local Humanoid = Char:WaitForChild("Humanoid")
 -- ══════════════════════════════════════════
 --  STATE
 -- ══════════════════════════════════════════
-local farmEnabled    = false  -- actual farm loop gate
-local farmToggleOn   = false  -- what the USER wants (toggle state)
-local tweenSpeed     = 25
-local farmPriority   = "Nearest"
-local safetyEnabled  = false
-local murdererDist   = 30
-local coinCount      = 0
-local farmPaused     = false
-local activeTween    = nil
-local lastCoinCount  = 0  -- for polling diff
+local farmEnabled       = false
+local farmToggleOn      = false
+local tweenSpeed        = 25
+local farmPriority      = "Nearest"
+local safetyEnabled     = false
+local murdererDist      = 30
+local coinCount         = 0
+local farmPaused        = false
+local activeTween       = nil
+local tweenDone         = false
+local baselineCollected = 0
 
 -- ══════════════════════════════════════════
---  MAP / ROUND HELPERS
+--  HELPERS
 -- ══════════════════════════════════════════
-local function GetActiveMap()
+local function FetchActiveMap()
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:GetAttribute("MapID") and obj:FindFirstChild("CoinContainer") then
             return obj
@@ -2910,21 +2910,18 @@ local function GetActiveMap()
     return nil
 end
 
-local function IsInRound()
-    return GetActiveMap() ~= nil
+local function CheckIfInRound()
+    return FetchActiveMap() ~= nil
 end
 
--- ══════════════════════════════════════════
---  COIN TARGETING
--- ══════════════════════════════════════════
-local function FindTargetCoin()
-    local map = GetActiveMap()
+local function FetchNearestCoin()
+    local map = FetchActiveMap()
     if not map then return nil end
 
     local coins = {}
     for _, coin in ipairs(map.CoinContainer:GetChildren()) do
-        local visual = coin:FindFirstChild("CoinVisual")
-        if visual and visual:GetAttribute("Collected") ~= true then
+        local v = coin:FindFirstChild("CoinVisual")
+        if v and not v:GetAttribute("Collected") then
             table.insert(coins, coin)
         end
     end
@@ -2932,12 +2929,12 @@ local function FindTargetCoin()
     if #coins == 0 then return nil end
 
     if farmPriority == "Nearest" then
-        local closest, bestDist = nil, math.huge
+        local closest, dist = nil, math.huge
         for _, coin in ipairs(coins) do
             local d = (HRP.Position - coin.Position).Magnitude
-            if d < bestDist then
-                closest  = coin
-                bestDist = d
+            if d < dist then
+                closest = coin
+                dist = d
             end
         end
         return closest
@@ -2950,49 +2947,55 @@ local function FindTargetCoin()
     return coins[1]
 end
 
--- counts how many coins in container are already collected
-local function CountCollectedCoins()
-    local map = GetActiveMap()
+local function TeleportToCoin(targetCoin)
+    if activeTween then
+        activeTween:Cancel()
+        activeTween = nil
+    end
+
+    tweenDone = false
+    Humanoid:ChangeState(11)
+
+    local d = (HRP.Position - targetCoin.Position).Magnitude
+    local t = TweenService:Create(
+        HRP,
+        TweenInfo.new(math.max(d / tweenSpeed, 0.05), Enum.EasingStyle.Linear),
+        { CFrame = targetCoin.CFrame }
+    )
+
+    activeTween = t
+
+    t.Completed:Connect(function(state)
+        if state == Enum.PlaybackState.Completed then
+            tweenDone = true
+        end
+    end)
+
+    t:Play()
+
+    while activeTween == t and not tweenDone do
+        task.wait(0.05)
+    end
+
+    if activeTween == t then
+        activeTween = nil
+    end
+end
+
+local function CountAllCollected()
+    local map = FetchActiveMap()
     if not map then return 0 end
     local count = 0
     for _, coin in ipairs(map.CoinContainer:GetChildren()) do
-        local visual = coin:FindFirstChild("CoinVisual")
-        if visual and visual:GetAttribute("Collected") == true then
+        local v = coin:FindFirstChild("CoinVisual")
+        if v and v:GetAttribute("Collected") == true then
             count += 1
         end
     end
     return count
 end
 
--- ══════════════════════════════════════════
---  MOVEMENT
--- ══════════════════════════════════════════
-local function TweenToCoin(targetCoin)
-    if activeTween then
-        activeTween:Cancel()
-        activeTween = nil
-    end
-
-    Humanoid:ChangeState(11)
-    local dist     = (HRP.Position - targetCoin.Position).Magnitude
-    local duration = math.max(dist / tweenSpeed, 0.05)
-
-    local tween = TweenService:Create(
-        HRP,
-        TweenInfo.new(duration, Enum.EasingStyle.Linear),
-        { CFrame = targetCoin.CFrame }
-    )
-
-    activeTween = tween
-    tween:Play()
-    tween.Completed:Wait()
-    activeTween = nil
-end
-
--- ══════════════════════════════════════════
---  MURDERER DETECTION
--- ══════════════════════════════════════════
-local function FindNearestMurderer()
+local function DetectNearbyMurderer()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LP and player.Character then
             local mHRP = player.Character:FindFirstChild("HumanoidRootPart")
@@ -3017,7 +3020,7 @@ local ParaCoins  = StatsStack:Paragraph({ Title = "💰 Coins Collected", Desc =
 local ParaTarget = StatsStack:Paragraph({ Title = "🎯 Current Target",  Desc = "None" })
 local ParaStatus = StatsStack:Paragraph({ Title = "📡 Round Status",    Desc = "Idle" })
 
-local function UpdateStats(target, status)
+local function RefreshStatsDisplay(target, status)
     ParaCoins:SetDesc(tostring(coinCount))
     ParaTarget:SetDesc(target or "None")
     ParaStatus:SetDesc(status or "Idle")
@@ -3042,28 +3045,27 @@ FarmSection:Toggle({
     Flag     = "autofarmcoin",
     Callback = function(state)
         farmToggleOn = state
-
         if state then
-            if not IsInRound() then
-                -- toggle is ON but no round yet, just wait
+            coinCount = 0
+            if not CheckIfInRound() then
                 farmEnabled = false
-                coinCount   = 0
-                UpdateStats(nil, "Waiting for round...")
+                RefreshStatsDisplay(nil, "Waiting for round...")
                 notify("Waiting for a round to start...", nil, "info")
             else
-                farmEnabled = true
-                coinCount   = 0
-                lastCoinCount = CountCollectedCoins()
-                UpdateStats(nil, "Farming...")
+                baselineCollected = CountAllCollected()
+                farmEnabled       = true
+                tweenDone         = false
+                RefreshStatsDisplay(nil, "Farming...")
                 notify("Auto Coin Farm enabled!", nil, "coins")
             end
         else
             farmEnabled = false
+            tweenDone   = true
             if activeTween then
                 activeTween:Cancel()
                 activeTween = nil
             end
-            UpdateStats(nil, "Idle")
+            RefreshStatsDisplay(nil, "Idle")
             notify("Auto Coin Farm disabled.", nil, "x")
         end
     end,
@@ -3139,19 +3141,21 @@ task.spawn(function()
     while true do
         task.wait(0.5)
         if safetyEnabled and farmEnabled then
-            local murderer, dist = FindNearestMurderer()
+            local murderer, dist = DetectNearbyMurderer()
             if murderer and not farmPaused then
                 farmPaused = true
+                tweenDone  = true
                 if activeTween then
                     activeTween:Cancel()
                     activeTween = nil
                 end
                 notify("Murderer nearby! Pausing... (" .. math.floor(dist) .. " studs)", nil, "shield-alert")
-                UpdateStats(nil, "⚠️ PAUSED – Murderer nearby")
+                RefreshStatsDisplay(nil, "⚠️ PAUSED – Murderer nearby")
             elseif not murderer and farmPaused then
                 farmPaused = false
+                tweenDone  = false
                 notify("Murderer gone. Resuming!", nil, "info")
-                UpdateStats(nil, "Farming...")
+                RefreshStatsDisplay(nil, "Farming...")
             end
         end
     end
@@ -3164,35 +3168,35 @@ task.spawn(function()
     local wasInRound = false
     while true do
         task.wait(1)
-        local inRound = IsInRound()
+        local inRound = CheckIfInRound()
 
-        -- round just ended
         if wasInRound and not inRound then
+            tweenDone   = true
+            farmEnabled = false
+            farmPaused  = false
+            coinCount   = 0
+            baselineCollected = 0
             if activeTween then
                 activeTween:Cancel()
                 activeTween = nil
             end
-            farmEnabled   = false
-            farmPaused    = false
-            coinCount     = 0
-            lastCoinCount = 0
-
             if farmToggleOn then
-                -- user still wants it on, just waiting for next round
-                UpdateStats(nil, "Waiting for round...")
+                RefreshStatsDisplay(nil, "Waiting for round...")
                 notify("Round ended. Waiting for next round...", nil, "info")
             else
-                UpdateStats(nil, "Idle")
+                RefreshStatsDisplay(nil, "Idle")
             end
         end
 
-        -- new round just started
         if not wasInRound and inRound then
             if farmToggleOn then
-                farmEnabled   = true
-                coinCount     = 0
-                lastCoinCount = CountCollectedCoins()
-                UpdateStats(nil, "Farming...")
+                task.wait(2)
+                baselineCollected = CountAllCollected()
+                coinCount         = 0
+                farmEnabled       = true
+                farmPaused        = false
+                tweenDone         = false
+                RefreshStatsDisplay(nil, "Farming...")
                 notify("New round! Auto Farm started.", nil, "coins")
             end
         end
@@ -3202,25 +3206,17 @@ task.spawn(function()
 end)
 
 -- ══════════════════════════════════════════
---  COIN COUNTER — polling based, most reliable
---  Every 0.3s, count collected coins in container
---  and diff against last known count.
+--  COIN COUNTER
 -- ══════════════════════════════════════════
 task.spawn(function()
     while true do
         task.wait(0.3)
         if not farmEnabled then continue end
-
-        local current = CountCollectedCoins()
-        if current > lastCoinCount then
-            coinCount     += (current - lastCoinCount)
-            lastCoinCount  = current
+        local current = CountAllCollected()
+        local mine = math.max(current - baselineCollected, 0)
+        if mine ~= coinCount then
+            coinCount = mine
             ParaCoins:SetDesc(tostring(coinCount))
-        end
-
-        -- reset baseline when map resets mid-round (coins respawn)
-        if current < lastCoinCount then
-            lastCoinCount = current
         end
     end
 end)
@@ -3229,23 +3225,29 @@ end)
 --  MAIN FARM LOOP
 -- ══════════════════════════════════════════
 task.spawn(function()
-    while task.wait(0.1) do
+    while task.wait() do
         if not farmEnabled or farmPaused then continue end
-
-        if not IsInRound() then
-            UpdateStats(nil, "Waiting for round...")
+        if not CheckIfInRound() then
+            RefreshStatsDisplay(nil, "Waiting for round...")
             continue
         end
 
-        local target = FindTargetCoin()
-        if not target then
-            UpdateStats("None", "Waiting for coins...")
+        local target = FetchNearestCoin()
+        if target then
+            RefreshStatsDisplay(target.Name, "Farming...")
+            TeleportToCoin(target)
+
+            local v = target:FindFirstChild("CoinVisual")
+            while v and not v:GetAttribute("Collected") and v.Parent do
+                if not farmEnabled or farmPaused then break end
+                local n = FetchNearestCoin()
+                if n and n ~= target then break end
+                task.wait()
+            end
+        else
+            RefreshStatsDisplay("None", "Waiting for coins...")
             task.wait(0.5)
-            continue
         end
-
-        UpdateStats(target.Name, "Farming...")
-        TweenToCoin(target)
     end
 end)
                         
