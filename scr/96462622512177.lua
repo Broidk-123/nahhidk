@@ -1,9 +1,4 @@
 -- Supermarket Simulator Hub
--- Migrated to WindUI | Clean variable names
-
--- ─────────────────────────────────────────
--- LOAD WINDUI
--- ─────────────────────────────────────────
 
 local _version = "1.6.64-fix"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. _version .. "/main.lua"))()
@@ -26,9 +21,9 @@ local Events        = ReplicatedStorage:WaitForChild("Events")
 -- ─────────────────────────────────────────
 
 local Window = WindUI:CreateWindow({
-    Title   = "Lomu Hub",
-    Icon    = "shopping-cart",
-    Author  = "Supermarket Simulator",
+    Title   = "Liquid Hub | Supermarket Simulator",
+    Icon    = "rbxassetid://109069296276521",
+    Author  = "by Liquid Devs",
     Acrylic = true,
     Theme   = "Dark",
     ToggleKey = Enum.KeyCode.RightAlt,
