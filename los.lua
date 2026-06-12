@@ -201,7 +201,7 @@ local TradingSection = Tabs.Main:Section({ Title = "Trading" })
 local ChestSection   = Tabs.Main:Section({ Title = "Chests" })
 
 -- Game time label
-local GameTimeLabel = MainSection:Paragraph({ Title = "Game Time", Desc = "Loading..." })
+--[[local GameTimeLabel = MainSection:Paragraph({ Title = "Game Time", Desc = "Loading..." })
 task.spawn(function()
     while task.wait(1) do
         local gameTime = math.floor(workspace.DistributedGameTime + 0.5)
@@ -237,7 +237,7 @@ task.spawn(function()
         })
     end
 end)
-
+]]
 MainSection:Paragraph({
     Title = "Discord",
     Desc  = "Join the Discord for more info!",
