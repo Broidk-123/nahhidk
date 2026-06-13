@@ -51,9 +51,9 @@ local Window = WindUI:CreateWindow({
             Height = 45,
         },
 
-        OpenButton({
+        OpenButton = {
             Enabled = false,
-            })
+            }
 })
 
 local CustomOpenButtonGui
