@@ -1,11 +1,3 @@
--- ╔══════════════════════════════════════════════╗
--- ║         Legends Of Speed Hub                ║
--- ║         Migrated to WindUI                  ║
--- ╚══════════════════════════════════════════════╝
-
--- ─────────────────────────────────────────────────
--- LOAD WINDUI
--- ─────────────────────────────────────────────────
 
 local _version = "1.6.64-fix"
 local WindUI   = loadstring(game:HttpGet(
@@ -49,6 +41,15 @@ local Window = WindUI:CreateWindow({
     Acrylic   = true,
     Theme     = "Sky",
     ToggleKey = Enum.KeyCode.RightAlt,
+    NewElements = true,
+    Resizable = true,
+    HideSearchBar = false,
+    ScrollBarEnabled = true,
+
+        Topbar = {
+            ButtonsType = "Mac",
+            Height = 45,
+        },
 })
 
 -- ─────────────────────────────────────────────────
@@ -195,10 +196,10 @@ end)
 -- MAIN TAB
 -- ═════════════════════════════════════════════════
 
-local MainSection    = Tabs.Main:Section({ Title = "Info" })
-local PlayerSection  = Tabs.Main:Section({ Title = "Player" })
-local TradingSection = Tabs.Main:Section({ Title = "Trading" })
-local ChestSection   = Tabs.Main:Section({ Title = "Chests" })
+local MainSection    = Tabs.Main:Section({ Title = "Info", Icon = "info", Box = true, BoxBorder = true })
+local PlayerSection  = Tabs.Main:Section({ Title = "Player", Icon = "user", Box = true, BoxBorder = true })
+local TradingSection = Tabs.Main:Section({ Title = "Trading", Icon = "repeat", Box = true, BoxBorder = true })
+local ChestSection   = Tabs.Main:Section({ Title = "Chests", Icon = "box", Box = true, BoxBorder = true })
 
 -- Game time label
 --[[local GameTimeLabel = MainSection:Paragraph({ Title = "Game Time", Desc = "Loading..." })
@@ -238,20 +239,7 @@ task.spawn(function()
     end
 end)
 ]]
-MainSection:Paragraph({
-    Title = "Discord",
-    Desc  = "Join the Discord for more info!",
-})
 
-MainSection:Button({
-    Title    = "Copy Discord Link",
-    Desc     = "Copies the Discord invite to clipboard",
-    Icon     = "link",
-    Callback = function()
-        setclipboard("https://discord.com/invite/hYmREEpSwh")
-        WindUI:Notify({ Title = "Copied!", Content = "Discord link copied to clipboard.", Duration = 2 })
-    end,
-})
 
 -- Player section
 local playerList   = {}
@@ -412,11 +400,11 @@ FarmSettingsSection:Dropdown({
 FarmSettingsSection:Dropdown({
     Title    = "Farm Speed",
     Desc     = "Higher = more orbs per cycle, may cause lag",
-    Values   = { "Super Fast", "Fast", "Medium", "Slow" },
+    Values   = { "Very Fast", "Fast", "Medium", "Slow" },
     Default  = "Medium",
     Multi    = false,
     Callback = function(value)
-        if     value == "Super Fast" then farmSpeed = 40
+        if     value == "Very Fast" then farmSpeed = 40
         elseif value == "Fast"       then farmSpeed = 30
         elseif value == "Medium"     then farmSpeed = 20
         elseif value == "Slow"       then farmSpeed = 10
@@ -457,16 +445,15 @@ FarmSettingsSection:Toggle({
     end,
 })
 
-FarmInfoSection:Paragraph({ Title = "Super Fast", Desc = "Value = 40 | Not recommended, may cause lag" })
-FarmInfoSection:Paragraph({ Title = "Fast",       Desc = "Value = 30" })
-FarmInfoSection:Paragraph({ Title = "Medium",     Desc = "Value = 20 | Recommended" })
-FarmInfoSection:Paragraph({ Title = "Slow",       Desc = "Value = 10" })
-
+FarmInfoSection:Paragraph({
+        Title = "Speed Info Status",
+        Desc = "Very Fast | May cause serious lag\nFast | Balanced\nMedium | Recommended\nSlow | No Lag",
+    })
 -- ═════════════════════════════════════════════════
 -- TELEPORT TAB
 -- ═════════════════════════════════════════════════
 
-local TeleportSection = Tabs.Teleport:Section({ Title = "Teleport to Location" })
+local TeleportSection = Tabs.Teleport:Section({ Title = "Teleports", Icon = "locate", Box = true, BoxBorder = true })
 
 local currentPlaceId = game.PlaceId
 
@@ -738,38 +725,3 @@ MiscSection:Button({
 
 local CreditsSection = Tabs.Credits:Section({ Title = "Credits" })
 
-CreditsSection:Button({
-    Title    = "Copy YouTube Link",
-    Desc     = "Copies the YouTube channel link",
-    Icon     = "youtube",
-    Callback = function()
-        setclipboard("https://youtube.com/@RelzBlox")
-        WindUI:Notify({ Title = "Copied!", Content = "YouTube link copied to clipboard.", Duration = 2 })
-    end,
-})
-
-CreditsSection:Button({
-    Title    = "Copy Discord Link",
-    Desc     = "Copies the Discord invite link",
-    Icon     = "link",
-    Callback = function()
-        setclipboard("https://discord.gg/25ms")
-        WindUI:Notify({ Title = "Copied!", Content = "Discord link copied to clipboard.", Duration = 2 })
-    end,
-})
-
--- ═════════════════════════════════════════════════
--- GLITCH HELP TAB
--- ═════════════════════════════════════════════════
-
-local TutorialSection = Tabs.Help:Section({ Title = "Tutorial" })
-local NotesSection    = Tabs.Help:Section({ Title = "Notes" })
-
-TutorialSection:Paragraph({ Title = "Step 1", Desc = "Use Pet Level 1 with No XP"                                     })
-TutorialSection:Paragraph({ Title = "Step 2", Desc = "Turn on Yellow Orbs in the Auto Farm tab"                      })
-TutorialSection:Paragraph({ Title = "Step 3", Desc = "Don't worry about XP"                                          })
-TutorialSection:Paragraph({ Title = "Step 4", Desc = "Don't use any other features except Yellow Orbs"               })
-TutorialSection:Paragraph({ Title = "Step 5", Desc = "Done!"                                                         })
-
-NotesSection:Paragraph({ Title = "Rebirth",     Desc = "Make sure your Rebirth count is Odd"                        })
-NotesSection:Paragraph({ Title = "Power Pet",   Desc = "The Power Pet will return if you disconnect"                })
