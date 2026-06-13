@@ -632,6 +632,7 @@ PetFarmSection:Toggle({
     Desc     = "Opens Desert Crystal and sells all pets except Void Dragon",
     Icon     = "repeat",
     Default  = false,
+    Locked = true,
     Callback = function(isEnabled)
         _G.OpenVoidEgg      = isEnabled
         _G.AutoUnique       = isEnabled
@@ -644,6 +645,7 @@ PetFarmSection:Toggle({
     Desc     = "Opens Electro Crystal and sells all pets except Ultra Birdie",
     Icon     = "repeat",
     Default  = false,
+    Locked = true,
     Callback = function(isEnabled)
         _G.OpenBirdieEgg     = isEnabled
         _G.AutoSellAllPets   = isEnabled
