@@ -43,11 +43,11 @@ local PLACE = {
 -- ─────────────────────────────────────────────────
 
 local Window = WindUI:CreateWindow({
-    Title     = "Legends Of Speed",
-    Icon      = "zap",
-    Author    = "Hub",
+    Title     = "Liquid Hub | Legend of Speed",
+    Icon      = "rbxassetid://109069296276521",
+    Author    = "by Liquid Devs",
     Acrylic   = true,
-    Theme     = "Dark",
+    Theme     = "Sky",
     ToggleKey = Enum.KeyCode.RightAlt,
 })
 
