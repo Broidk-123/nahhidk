@@ -30,11 +30,11 @@ local Window = WindUI:CreateWindow({
     NewElements = true,
     ToggleKey   = Enum.KeyCode.RightAlt,
     OpenButton  = { Enabled = false },
-    Topbar      = { Style = "Mac" },
+    Topbar      = { ButtonsType = "Mac" },
 })
 
 local Tabs = {
-    AutoFarm  = Window:Tab({ Title = "Auto Farm",      Icon = "swords"      }),
+    AutoFarm  = Window:Tab({ Title = "Main",      Icon = "house"      }),
     Stats     = Window:Tab({ Title = "Stats",          Icon = "bar-chart-2" }),
     Shop      = Window:Tab({ Title = "Shop",           Icon = "shopping-bag"}),
     FarmSpec  = Window:Tab({ Title = "Farm Specified", Icon = "crosshair"   }),
