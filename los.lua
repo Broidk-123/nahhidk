@@ -50,8 +50,62 @@ local Window = WindUI:CreateWindow({
             ButtonsType = "Mac",
             Height = 45,
         },
+
+        OpenButton({
+            Enabled = false,
+            })
 })
 
+local CustomOpenButtonGui
+
+local function createCustomOpenButton()
+	if CustomOpenButtonGui then return end
+	CustomOpenButtonGui = Instance.new("ScreenGui")
+	CustomOpenButtonGui.Name = "LiquidHub_CustomOpenButton"
+	CustomOpenButtonGui.Parent = getGuiParent()
+	CustomOpenButtonGui.ResetOnSpawn = false
+	CustomOpenButtonGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	local button = Instance.new("ImageButton")
+	button.Name = "CustomOpenBtn"
+	button.Size = UDim2.new(0, 50, 0, 50)
+	button.Position = UDim2.new(0.1, 0, 0.05, 0)
+	button.BackgroundColor3 = Color3.fromRGB(20, 30, 45)
+	button.Image = "rbxassetid://109069296276521"
+	button.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	button.ScaleType = Enum.ScaleType.Fit
+	button.Parent = CustomOpenButtonGui
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 12)
+	corner.Parent = button
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(14, 165, 233)
+	stroke.Thickness = 2
+	stroke.Parent = button
+
+	local dragging, dragStart, startPos = false, nil, nil
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = button.Position
+		end
+	end)
+	button.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+	end)
+	button.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+	button.MouseButton1Click:Connect(function()
+		if Window then Window:Toggle() end
+	end)
+end
 -- ─────────────────────────────────────────────────
 -- TABS
 -- ─────────────────────────────────────────────────
@@ -727,3 +781,6 @@ MiscSection:Button({
 
 local CreditsSection = Tabs.Credits:Section({ Title = "Credits" })
 
+
+
+createCustomOpenButton()
