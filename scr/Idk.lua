@@ -237,7 +237,7 @@ local Window = WindUI:CreateWindow({
     Title = "Liquid Hub | Universal",
     Icon = "rbxassetid://109069296276521", -- lucide icon. optional
 	IconSize = "35",
-    Author = "by Takgoo", -- optional
+    Author = "by Liquid Devs" .. utf8.char(0xE000), -- optional
 	Theme = "Sky",
     HideSearchBar = false,
 	Transparent = true,
@@ -245,7 +245,7 @@ local Window = WindUI:CreateWindow({
 	NewElements = true,
 	ScrollBarEnabled = true,
 	SideBarWidth = 180,
-	Size = UDim2.fromOffset(720, 500),
+	Size = UDim2.fromOffset(600, 420),
 	MinSize = Vector2.new(580, 400),
 	MaxSize = Vector2.new(1050, 725),
 
