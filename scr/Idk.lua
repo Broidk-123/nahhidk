@@ -79,32 +79,27 @@ local RoleColors = {
 local RoleColors = {
     Owner = WindUI:Gradient({
         ["0"] = { Color = Color3.fromHex("#0072FF") },
-        ["50"] = { Color = Color3.fromHex("#00D4FF") },
-        ["100"] = { Color = Color3.fromHex("#FFFFFF") }
+        ["100"] = { Color = Color3.fromHex("#00D4FF") }
     }, { Rotation = 90 }),
 
     Admin = WindUI:Gradient({
         ["0"] = { Color = Color3.fromHex("#FF8C00") },
-        ["50"] = { Color = Color3.fromHex("#FFD000") },
-        ["100"] = { Color = Color3.fromHex("#FFF5B7") }
+        ["100"] = { Color = Color3.fromHex("#FFD700") }
     }, { Rotation = 90 }),
 
     Beta = WindUI:Gradient({
         ["0"] = { Color = Color3.fromHex("#A855F7") },
-        ["50"] = { Color = Color3.fromHex("#D946EF") },
-        ["100"] = { Color = Color3.fromHex("#F5D0FE") }
+        ["100"] = { Color = Color3.fromHex("#EC4899") }
     }, { Rotation = 90 }),
 
     Premium = WindUI:Gradient({
         ["0"] = { Color = Color3.fromHex("#00D4FF") },
-        ["50"] = { Color = Color3.fromHex("#00FFA3") },
-        ["100"] = { Color = Color3.fromHex("#E6FFF7") }
+        ["100"] = { Color = Color3.fromHex("#00FFA3") }
     }, { Rotation = 90 }),
 
     Free = WindUI:Gradient({
         ["0"] = { Color = Color3.fromHex("#30FF6A") },
-        ["50"] = { Color = Color3.fromHex("#B7FF2F") },
-        ["100"] = { Color = Color3.fromHex("#F4FFE0") }
+        ["100"] = { Color = Color3.fromHex("#B7FF2F") }
     }, { Rotation = 90 })
 }
 
