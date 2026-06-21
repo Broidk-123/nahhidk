@@ -66,13 +66,46 @@ local isBeta = hasRole("Beta")
 -- Premium from Junkie
 local isPremium = getgenv().Access == "Premium"
 
--- Colors
+--[[Colors
 local RoleColors = {
     Owner = Color3.fromHex("#0072FF"),
     Admin = Color3.fromHex("#FF8C00"),
     Beta = Color3.fromHex("#A855F7"),
     Premium = Color3.fromHex("#00D4FF"),
     Free = Color3.fromHex("#30FF6A")
+}
+]]
+
+local RoleColors = {
+    Owner = WindUI:Gradient({
+        ["0"] = { Color = Color3.fromHex("#0072FF") },
+        ["50"] = { Color = Color3.fromHex("#00D4FF") },
+        ["100"] = { Color = Color3.fromHex("#FFFFFF") }
+    }, { Rotation = 90 }),
+
+    Admin = WindUI:Gradient({
+        ["0"] = { Color = Color3.fromHex("#FF8C00") },
+        ["50"] = { Color = Color3.fromHex("#FFD000") },
+        ["100"] = { Color = Color3.fromHex("#FFF5B7") }
+    }, { Rotation = 90 }),
+
+    Beta = WindUI:Gradient({
+        ["0"] = { Color = Color3.fromHex("#A855F7") },
+        ["50"] = { Color = Color3.fromHex("#D946EF") },
+        ["100"] = { Color = Color3.fromHex("#F5D0FE") }
+    }, { Rotation = 90 }),
+
+    Premium = WindUI:Gradient({
+        ["0"] = { Color = Color3.fromHex("#00D4FF") },
+        ["50"] = { Color = Color3.fromHex("#00FFA3") },
+        ["100"] = { Color = Color3.fromHex("#E6FFF7") }
+    }, { Rotation = 90 }),
+
+    Free = WindUI:Gradient({
+        ["0"] = { Color = Color3.fromHex("#30FF6A") },
+        ["50"] = { Color = Color3.fromHex("#B7FF2F") },
+        ["100"] = { Color = Color3.fromHex("#F4FFE0") }
+    }, { Rotation = 90 })
 }
 
 -- Icons
